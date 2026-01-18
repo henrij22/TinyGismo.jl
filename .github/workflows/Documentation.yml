@@ -25,8 +25,10 @@ jobs:
         with:
           version: '1.12'
       - uses: julia-actions/cache@v2
-      - name: Install dependencies
-        run: julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+      - uses: julia-actions/julia-buildpkg@v1
+        with:
+          localregistry: |
+            https://github.com/henrij22/JuliaRegistry.git
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.ORGA_TOKEN }}
