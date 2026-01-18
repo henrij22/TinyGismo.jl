@@ -20,12 +20,14 @@ BSpline
 
 These query functions are also available for basis functions. See the [Basis Functions](02_basis.md) section for detailed documentation.
 
-- [`knots`](@ref) - Get the knot vector
-- [`degree`](@ref) - Get the polynomial degree
-- [`basis`](@ref) - Get the underlying basis
+- [`TinyGismo.knots`](@ref) - Get the knot vector
+- [`TinyGismo.degree`](@ref) - Get the polynomial degree
+- [`TinyGismo.basis`](@ref) - Get the underlying basis
 - [`boundary`](@ref) - Extract a boundary curve/surface
 
 ```@docs
+TinyGismo.basis
+TinyGismo.boundary
 numCoefs
 coefAtCorner
 ```
@@ -57,10 +59,10 @@ TensorBSpline
 
 These query functions are also available for basis functions. See the [Basis Functions](02_basis.md) section for detailed documentation.
 
-- [`knots`](@ref) - Get the knot vector
-- [`degree`](@ref) - Get the polynomial degree
-- [`basis`](@ref) - Get the underlying basis
-- [`boundary`](@ref) - Extract a boundary curve/surface
+- [`TinyGismo.knots`](@ref) - Get the knot vector
+- [`TinyGismo.degree`](@ref) - Get the polynomial degree
+- [`TinyGismo.basis`](@ref) - Get the underlying basis
+- [`TinyGismo.boundary`](@ref) - Extract a boundary curve/surface
 
 #### Refinement
 
@@ -91,14 +93,14 @@ Nurbs
 
 These query functions are also available for basis functions. See the [Basis Functions](02_basis.md) section for detailed documentation.
 
-- [`knots`](@ref) - Get the knot vector
-- [`degree`](@ref) - Get the polynomial degree
-- [`basis`](@ref) - Get the underlying basis
-- [`boundary`](@ref) - Extract a boundary curve/surface
+- [`TinyGismo.knots`](@ref) - Get the knot vector
+- [`TinyGismo.degree`](@ref) - Get the polynomial degree
+- [`TinyGismo.basis`](@ref) - Get the underlying basis
+- [`TinyGismo.boundary`](@ref) - Extract a boundary curve/surface
+- [`TinyGismo.weights`](@ref) - Get the control point weights
 
 ```@docs
 TinyGismo.weight
-TinyGismo.weights
 ```
 
 #### Refinement
@@ -128,11 +130,11 @@ TensorNurbs
 
 These query functions are also available for basis functions. See the [Basis Functions](02_basis.md) section for detailed documentation.
 
-- [`knots`](@ref) - Get the knot vector
-- [`degree`](@ref) - Get the polynomial degree
-- [`basis`](@ref) - Get the underlying basis
-- [`boundary`](@ref) - Extract a boundary curve/surface
-- [`weights`](@ref) - Get the control point weights
+- [`TinyGismo.knots`](@ref) - Get the knot vector
+- [`TinyGismo.degree`](@ref) - Get the polynomial degree
+- [`TinyGismo.basis`](@ref) - Get the underlying basis
+- [`TinyGismo.boundary`](@ref) - Extract a boundary curve/surface
+- [`TinyGismo.weights`](@ref) - Get the control point weights
 
 #### Refinement
 

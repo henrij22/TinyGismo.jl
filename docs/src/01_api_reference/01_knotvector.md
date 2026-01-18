@@ -24,7 +24,7 @@ knotContainer
 
 These operations are documented in the [Basis Functions](02_basis.md) section.
 
-- [`degree`](@ref) - Get the polynomial degree
+- [`TinyGismo.degree`](@ref) - Get the polynomial degree
 - [`degreeIncrease`](@ref) - Increase the polynomial degree
 - [`degreeDecrease`](@ref) - Decrease the polynomial degree
 - [`degreeElevate`](@ref) - Elevate the polynomial degree

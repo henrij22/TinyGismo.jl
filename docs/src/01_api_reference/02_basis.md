@@ -57,6 +57,12 @@ NurbsBasis
 TensorNurbsBasis
 ```
 
+### Query Functions
+
+```@docs
+TinyGismo.weights
+```
+
 ## Generic Basis Operations
 
 These methods work on all basis types (B-spline and NURBS).
@@ -72,16 +78,16 @@ isActive
 
 ### Degree and Continuity Operations
 
-These operations work on all basis types and are shared with geometry types. For detailed documentation, see the docstrings:
-
-- [`degreeElevate`](@ref) - Elevate the polynomial degree
-- [`degreeReduce`](@ref) - Reduce the polynomial degree  
-- [`degreeIncrease`](@ref) - Increase the polynomial degree
-- [`degreeDecrease`](@ref) - Decrease the polynomial degree
-- [`elevateContinuity`](@ref) - Elevate the continuity
-- [`reduceContinuity`](@ref) - Reduce the continuity
-- [`setDegree`](@ref) - Set the polynomial degree
-- [`setDegreePreservingMultiplicity`](@ref) - Set degree while preserving knot multiplicities
+```@docs
+degreeElevate
+degreeReduce
+degreeIncrease
+degreeDecrease
+elevateContinuity
+reduceContinuity
+setDegree
+setDegreePreservingMultiplicity
+```
 
 ### Geometric Operations
 
@@ -104,10 +110,12 @@ evalFunc
 
 ```@docs
 TinyGismo.deriv!
+TinyGismo.deriv
 TinyGismo.derivSingle!
 TinyGismo.derivSingle
 TinyGismo.derivFunc
 TinyGismo.deriv2!
+TinyGismo.deriv2
 TinyGismo.deriv2Single!
 TinyGismo.deriv2Single
 TinyGismo.deriv2Func

@@ -30,7 +30,7 @@ makedocs(;
 
 if !liveserver
     deploydocs(;
-        repo = "github.com/olaf-project/OlafLab.jl.git",
+        repo = "github.com/henrij22/TinyGismo.jl.git",
         push_preview = true,
         versions = [
             "stable" => "v^",
