@@ -5,11 +5,13 @@ authors = ["Henrik Jakob <jakob@ibb.uni-stuttgart.de>"]
 
 [deps]
 CxxWrap = "1f15a43c-97ca-5a2a-ae31-89f07a497df4"
+EnumX = "4e289a0a-7415-4d19-859d-a7e5c4648b56"
 TinyGismo_jll = "7e61441e-6e6e-5c6f-8c66-76107880e13d"
 
 [compat]
 CxxWrap = "0.17.4"
-TinyGismo_jll = "0.1.1"
+EnumX = "1.0.5"
+TinyGismo_jll = "0.1.4"
 julia = "1.11"
 
 [extras]
