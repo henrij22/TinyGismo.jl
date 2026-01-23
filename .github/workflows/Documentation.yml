@@ -31,7 +31,7 @@ jobs:
             https://github.com/henrij22/JuliaRegistry.git
       - name: Build and deploy
         env:
-          GITHUB_TOKEN: ${{ secrets.ORGA_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.OLAFLAB_WRITE }}
+          GITHUB_TOKEN: ${{ secrets.DOCUMENTER_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DEPLOY_KEY_WRITE }}
           GKSwstype: '100'
         run: julia --project=docs --color=yes docs/make.jl

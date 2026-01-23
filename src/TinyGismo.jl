@@ -18,7 +18,7 @@ export BSplineBasis, BSpline, TensorBSplineBasis, TensorBSpline, KnotVector
 export NurbsBasis, TensorNurbsBasis, Nurbs, TensorNurbs
 
 export degreeElevate, degreeReduce, degreeIncrease, degreeDecrease, elevateContinuity, reduceContinuity, setDegree, setDegreePreservingMultiplicity
-export insertKnot,insertKnots, removeKnot, uniformRefine, uniformCoarsen, uniformRefine_withCoefs, boundary
+export insertKnot, insertKnots, removeKnot, uniformRefine, uniformCoarsen, uniformRefine_withCoefs, boundary
 
 export eval!, deriv!, deriv2!, evalSingle!, evalFunc!
 export _eval, deriv, deriv2, evalSingle, evalFunc
@@ -118,8 +118,7 @@ This is a convenience constructor that defaults to `gsVector{Float64}(args...)`.
 """
 gsVector(args...) = gsVector{Float64}(args...)
 
-# Documentation 
+# Documentation
 include("stubs.jl")
 
 end # module TinyGismo
-

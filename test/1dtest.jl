@@ -8,6 +8,8 @@
 end
 
 @testitem "BSpline Basis Test" begin
+    using TinyGismo: knots, degree
+    
     vec = [0, 0, 0, 0.5, 1, 1, 1]
     kv = KnotVector(vec)
     basis = BSplineBasis(kv)
