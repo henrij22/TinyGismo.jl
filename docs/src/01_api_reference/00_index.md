@@ -17,10 +17,12 @@ Depth = 2
 
 ## Overview
 
-TinyGismo.jl provides a Julia interface to the G+Smo (Geometry + Simulation Modules) library, focusing on:
+TinyGismo.jl provides an alternative Julia interface to the G+Smo (Geometry + Simulation Modules) library, focusing on:
 
-- **Knot Vectors**: Management of knot sequences that define spline spaces
+- **Knot Vectors**: Management of knot vectors
 - **Basis Functions**: B-spline and NURBS basis functions in univariate and tensor product forms
 - **Geometries**: Spline curves, surfaces, and volumes for geometric modeling
 - **Factories**: Convenient constructors for standard geometric shapes
 - **Utilities**: Matrix types, file I/O, and helper functions
+
+The official Julia bindings can be found at [Gismo.jl](https://github.com/gismo/Gismo.jl).
