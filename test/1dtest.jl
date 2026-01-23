@@ -9,7 +9,7 @@ end
 
 @testitem "BSpline Basis Test" begin
     using TinyGismo: knots, degree
-    
+
     vec = [0, 0, 0, 0.5, 1, 1, 1]
     kv = KnotVector(vec)
     basis = BSplineBasis(kv)
@@ -53,7 +53,7 @@ end
     degreeReduce(basis)
     @test knotContainer(knots(basis)) ≈ vec
 
-    # continuity, effectivly gets rid of one knot in the middle (?)
+    # continuity, effectively gets rid of one knot in the middle (?)
     basis = BSplineBasis(kv)
     elevateContinuity(basis)
     @test degree(basis) == p
@@ -66,7 +66,7 @@ end
     ξ = [0.4]
 
     # Test equivalency bang and non-bang methods
-    # Note directly calling toMatrix might invalidate the results, in general use bang-mathods
+    # Note directly calling toMatrix might invalidate the results, in general use bang-methods
     _result = TinyGismo._eval(basis, ξ)
     result = toMatrix(_result)
 
@@ -77,20 +77,20 @@ end
     # Partition of unity
     sum(result) ≈ 1.0
 
-    # actives 
+    # actives
     out = gsMatrix{Int32}()
     active!(basis, ξ, out)
     length(toVector(out)) == numActive(basis)
 
 
-    # Eval Func, evaluating directly in a Float is fine 
+    # Eval Func, evaluating directly in a Float is fine
     resultFunc = toMatrix(TinyGismo.evalFunc(basis, ξ, coefs))[1]
 
-    funcVal = 0.0 
+    funcVal = 0.0
     for i in 1:numActive(basis)
         Ni = toMatrix(TinyGismo.evalSingle(basis, i, [0.4]))[1]
         @test Ni ≈ result[i]
-        global funcVal += Ni * coefs[toVector(out)[i]] 
+        global funcVal += Ni * coefs[toVector(out)[i]]
     end
 
 end

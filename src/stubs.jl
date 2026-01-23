@@ -1,4 +1,4 @@
-## File to hold docstrings 
+## File to hold docstrings
 
 @doc """
     gsBasis
