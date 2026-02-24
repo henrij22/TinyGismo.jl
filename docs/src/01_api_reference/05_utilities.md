@@ -2,6 +2,14 @@
 
 Utility types and functions for working with Gismo objects.
 
+## Knot Span
+
+```@docs
+centerPoint
+lowerCorner
+upperCorner
+```
+
 ## Matrix and Vector Types
 
 Gismo uses its own matrix and vector types for efficient computation and interfacing with C++.
@@ -11,6 +19,14 @@ Gismo uses its own matrix and vector types for efficient computation and interfa
 ```@docs
 gsMatrix
 gsVector
+```
+
+### Size and Dimension Queries
+
+```@docs
+TinyGismo.size
+TinyGismo.rows
+TinyGismo.cols
 ```
 
 ### Conversion Functions
@@ -26,12 +42,4 @@ TinyGismo.toValue
 ```@docs
 TinyGismo.value
 TinyGismo._value
-```
-
-## File I/O
-
-### Reading Files
-
-```@docs
-TinyGismo.readFile
 ```

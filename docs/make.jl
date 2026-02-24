@@ -24,6 +24,9 @@ makedocs(;
             "01_api_reference/01_knotvector.md",
             "01_api_reference/02_basis.md",
             "01_api_reference/03_geometries.md",
+            "01_api_reference/04_factories.md",
+            "01_api_reference/05_utilities.md",
+            "01_api_reference/06_io.md",
         ],
     ]
 )

@@ -36,18 +36,18 @@ coefAtCorner
 
 Refinement operations are shared with basis functions. See the [Basis Functions - Refinement](02_basis.md#Refinement) section for detailed documentation.
 
-- [`insertKnot`](@ref) - Insert a knot into the geometry
-- [`uniformRefine`](@ref) - Uniformly refine the mesh
-- [`uniformCoarsen`](@ref) - Uniformly coarsen the mesh
+- [`insertKnot!`](@ref) - Insert a knot into the geometry
+- [`uniformRefine!`](@ref) - Uniformly refine the mesh
+- [`uniformCoarsen!`](@ref) - Uniformly coarsen the mesh
 
 #### Degree Operations
 
 These degree operations are shared with basis functions. See the [Basis Functions - Degree and Continuity Operations](02_basis.md#Degree-and-Continuity-Operations) section for detailed documentation.
 
-- [`degreeElevate`](@ref) - Elevate the polynomial degree
-- [`degreeReduce`](@ref) - Reduce the polynomial degree
-- [`degreeIncrease`](@ref) - Increase the polynomial degree
-- [`degreeDecrease`](@ref) - Decrease the polynomial degree
+- [`degreeElevate!`](@ref) - Elevate the polynomial degree
+- [`degreeReduce!`](@ref) - Reduce the polynomial degree
+- [`degreeIncrease!`](@ref) - Increase the polynomial degree
+- [`degreeDecrease!`](@ref) - Decrease the polynomial degree
 
 ### Tensor Product B-Splines
 
@@ -68,18 +68,18 @@ These query functions are also available for basis functions. See the [Basis Fun
 
 Refinement operations are shared with basis functions. See the [Basis Functions - Refinement](02_basis.md#Refinement) section for detailed documentation.
 
-- [`insertKnot`](@ref) - Insert a knot into the geometry
-- [`uniformRefine`](@ref) - Uniformly refine the mesh
-- [`uniformCoarsen`](@ref) - Uniformly coarsen the mesh
+- [`insertKnot!`](@ref) - Insert a knot into the geometry
+- [`uniformRefine!`](@ref) - Uniformly refine the mesh
+- [`uniformCoarsen!`](@ref) - Uniformly coarsen the mesh
 
 #### Degree Operations
 
 These degree operations are shared with basis functions. See the [Basis Functions - Degree and Continuity Operations](02_basis.md#Degree-and-Continuity-Operations) section for detailed documentation.
 
-- [`degreeElevate`](@ref) - Elevate the polynomial degree
-- [`degreeReduce`](@ref) - Reduce the polynomial degree
-- [`degreeIncrease`](@ref) - Increase the polynomial degree
-- [`degreeDecrease`](@ref) - Decrease the polynomial degree
+- [`degreeElevate!`](@ref) - Elevate the polynomial degree
+- [`degreeReduce!`](@ref) - Reduce the polynomial degree
+- [`degreeIncrease!`](@ref) - Increase the polynomial degree
+- [`degreeDecrease!`](@ref) - Decrease the polynomial degree
 
 ## NURBS Geometries
 
@@ -107,18 +107,18 @@ TinyGismo.weight
 
 Refinement operations are shared with basis functions. See the [Basis Functions - Refinement](02_basis.md#Refinement) section for detailed documentation.
 
-- [`insertKnot`](@ref) - Insert a knot into the geometry
-- [`uniformRefine`](@ref) - Uniformly refine the mesh
-- [`uniformCoarsen`](@ref) - Uniformly coarsen the mesh
+- [`insertKnot!`](@ref) - Insert a knot into the geometry
+- [`uniformRefine!`](@ref) - Uniformly refine the mesh
+- [`uniformCoarsen!`](@ref) - Uniformly coarsen the mesh
 
 #### Degree Operations
 
 These degree operations are shared with basis functions. See the [Basis Functions - Degree and Continuity Operations](02_basis.md#Degree-and-Continuity-Operations) section for detailed documentation.
 
-- [`degreeElevate`](@ref) - Elevate the polynomial degree
-- [`degreeReduce`](@ref) - Reduce the polynomial degree
-- [`degreeIncrease`](@ref) - Increase the polynomial degree
-- [`degreeDecrease`](@ref) - Decrease the polynomial degree
+- [`degreeElevate!`](@ref) - Elevate the polynomial degree
+- [`degreeReduce!`](@ref) - Reduce the polynomial degree
+- [`degreeIncrease!`](@ref) - Increase the polynomial degree
+- [`degreeDecrease!`](@ref) - Decrease the polynomial degree
 
 ### Tensor Product NURBS
 
@@ -140,18 +140,18 @@ These query functions are also available for basis functions. See the [Basis Fun
 
 Refinement operations are shared with basis functions. See the [Basis Functions - Refinement](02_basis.md#Refinement) section for detailed documentation.
 
-- [`insertKnot`](@ref) - Insert a knot into the geometry
-- [`uniformRefine`](@ref) - Uniformly refine the mesh
-- [`uniformCoarsen`](@ref) - Uniformly coarsen the mesh
+- [`insertKnot!`](@ref) - Insert a knot into the geometry
+- [`uniformRefine!`](@ref) - Uniformly refine the mesh
+- [`uniformCoarsen!`](@ref) - Uniformly coarsen the mesh
 
 #### Degree Operations
 
 These degree operations are shared with basis functions. See the [Basis Functions - Degree and Continuity Operations](02_basis.md#Degree-and-Continuity-Operations) section for detailed documentation.
 
-- [`degreeElevate`](@ref) - Elevate the polynomial degree
-- [`degreeReduce`](@ref) - Reduce the polynomial degree
-- [`degreeIncrease`](@ref) - Increase the polynomial degree
-- [`degreeDecrease`](@ref) - Decrease the polynomial degree
+- [`degreeElevate!`](@ref) - Elevate the polynomial degree
+- [`degreeReduce!`](@ref) - Reduce the polynomial degree
+- [`degreeIncrease!`](@ref) - Increase the polynomial degree
+- [`degreeDecrease!`](@ref) - Decrease the polynomial degree
 
 ## Generic Geometry Operations
 

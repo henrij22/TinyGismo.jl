@@ -1,6 +1,6 @@
 name = "TinyGismo"
 uuid = "5750890c-44ac-400c-9e9d-1788b5a8ead6"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Henrik Jakob <jakob@ibb.uni-stuttgart.de>"]
 
 [workspace]
@@ -13,15 +13,14 @@ TinyGismo_jll = "7e61441e-6e6e-5c6f-8c66-76107880e13d"
 
 [compat]
 CxxWrap = "0.17.4"
-EnumX = "1.0.5"
-TinyGismo_jll = "0.1.5"
+EnumX = "1"
+TinyGismo_jll = "0.1.10"
 julia = "1.11"
 
 [extras]
-Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [targets]
-test = ["Test", "Aqua", "TestItems", "TestItemRunner"]
+test = ["Test", "TestItems", "TestItemRunner"]

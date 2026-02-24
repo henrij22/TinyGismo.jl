@@ -2,5 +2,4 @@ LICENSE
 README.md
 CITATION.bib
 ./src/TinyGismo.jl
-./test/Aqua.jl
 ./Project.toml
