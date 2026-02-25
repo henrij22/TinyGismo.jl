@@ -362,7 +362,6 @@ kv = KnotVector(knots)
 function KnotVector end
 
 
-
 # size already documented above
 function size end
 
