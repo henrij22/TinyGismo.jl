@@ -20,6 +20,7 @@ elementIndex
 elementInSupportOf
 active!
 isActive
+boundary
 ```
 
 ### Degree and Continuity Operations
