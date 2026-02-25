@@ -622,6 +622,17 @@ This operation modifies the basis in-place.
 function setDegreePreservingMultiplicity! end
 
 @doc """
+    boundary(basis::gsBasis, s::Int)
+
+Returns the indices of the basis functions that are nonzero at the domain boundary as single-column-matrix.
+
+# Arguments: 
+- `basis`: The basis
+- `s`: The boxSide describing the side. 
+"""
+function boundary end
+
+@doc """
     reverse!(basis::gsBasis)
 
 Reverse the basis (flip the parametric direction).
@@ -1372,20 +1383,6 @@ function degree end
 
 # basis already documented above
 function basis end
-
-@doc """
-    boundary(nurbs::TensorNurbs, c::Int)
-
-Extract a boundary from the tensor product NURBS.
-
-# Arguments
-- `nurbs`: The tensor product NURBS
-- `c`: The boundary/side index
-
-# Returns
-A lower-dimensional Nurbs or TensorNurbs representing the boundary
-"""
-function boundary end
 
 # gsMatrix and gsVector utility types
 
