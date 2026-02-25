@@ -21,41 +21,41 @@ end
     @test numElements(basis) == numElements(kv)
     @test numActive(basis) == 3
 
-    uniformRefine(basis)
+    uniformRefine!(basis)
     @test numElements(basis) == 2numElements(kv)
     @test degree(basis) == p
 
-    uniformCoarsen(basis)
+    uniformCoarsen!(basis)
     @test numElements(basis) == numElements(kv)
     @test degree(basis) == p
 
     # Degree Elevation (each unique knot gets repeated)
-    degreeElevate(basis)
+    degreeElevate!(basis)
     @test numElements(basis) == numElements(kv)
     @test degree(basis) == p + 1
     @test length(knotContainer(knots(basis))) == size(kv) + uSize(kv)
 
     # Degree Reduce keeps continuity in [0, 0, 0, 0.5, 0.5, 1, 1, 1]
-    degreeDecrease(basis)
+    degreeDecrease!(basis)
     @test numElements(basis) == numElements(kv)
     @test degree(basis) == p
     @test length(knotContainer(knots(basis))) == size(kv) + 1
 
     # Degree Increase (only outer knots are repeated?)
     basis = BSplineBasis(kv)
-    degreeIncrease(basis)
+    degreeIncrease!(basis)
     @test degree(basis) == p + 1
     @test length(knotContainer(knots(basis))) == size(kv) + 2
 
     # Degree Reduce (elevates continuity (?))
     basis = BSplineBasis(kv)
-    degreeElevate(basis)
-    degreeReduce(basis)
+    degreeElevate!(basis)
+    degreeReduce!(basis)
     @test knotContainer(knots(basis)) ≈ vec
 
     # continuity, effectively gets rid of one knot in the middle (?)
     basis = BSplineBasis(kv)
-    elevateContinuity(basis)
+    elevateContinuity!(basis)
     @test degree(basis) == p
     @test numElements(basis) == 1
     @test length(knotContainer(knots(basis))) == size(kv) - 1

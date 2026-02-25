@@ -116,14 +116,16 @@ function knot end
 
 @doc """
     size(basis::BSplineBasis)
+    size(basis::KnotVector)
+    size(obj::Union{gsMatrix, gsVector})
 
-Get the number of basis functions.
+Get the number of basis functions, knotVector, matrix or vector.
 
 # Arguments
-- `basis`: The B-spline basis
+- `obj`: The Object
 
 # Returns
-The number of basis functions in the basis
+The number of basis functions in the basis or entries in the matrix or vector
 """
 function size end
 
@@ -186,7 +188,7 @@ The order of the basis (degree + 1)
 function order end
 
 @doc """
-    insertKnot(basis::BSplineBasis, knot::Float64, mult::Int=1)
+    insertKnot!(basis::BSplineBasis, knot::Float64, mult::Int=1)
 
 Insert a knot into the basis.
 
@@ -200,10 +202,10 @@ This operation refines the basis by inserting a knot value. The multiplicity det
 # Note
 This operation modifies the basis in-place.
 """
-function insertKnot end
+function insertKnot! end
 
 @doc """
-    removeKnot(basis::BSplineBasis, knot::Float64, mult::Int=1)
+    removeKnot!(basis::BSplineBasis, knot::Float64, mult::Int=1)
 
 Remove a knot from the basis.
 
@@ -215,10 +217,10 @@ Remove a knot from the basis.
 # Note
 This operation modifies the basis in-place.
 """
-function removeKnot end
+function removeKnot! end
 
 @doc """
-    insertKnots(basis::BSplineBasis, knots::Vector{Float64})
+    insertKnots!(basis::BSplineBasis, knots::Vector{Float64})
 
 Insert multiple knots into the basis.
 
@@ -229,7 +231,7 @@ Insert multiple knots into the basis.
 # Note
 This operation modifies the basis in-place.
 """
-function insertKnots end
+function insertKnots! end
 
 @doc """
     numActive(basis::TensorBSplineBasis, u::Vector{Float64})
@@ -359,6 +361,7 @@ kv = KnotVector(knots)
 """
 function KnotVector end
 
+
 # size already documented above
 function size end
 
@@ -423,17 +426,17 @@ function knotContainer end
 # degree already documented above
 function degree end
 
-# degreeIncrease is documented below for gsBasis/gsGeometry (more general)
-function degreeIncrease end
+# degreeIncrease! is documented below for gsBasis/gsGeometry (more general)
+function degreeIncrease! end
 
-# degreeDecrease is documented below for gsBasis/gsGeometry (more general)
-function degreeDecrease end
+# degreeDecrease! is documented below for gsBasis/gsGeometry (more general)
+function degreeDecrease! end
 
-# degreeElevate is documented below for gsBasis/gsGeometry (more general)
-function degreeElevate end
+# degreeElevate! is documented below for gsBasis/gsGeometry (more general)
+function degreeElevate! end
 
-# uniformRefine is documented below for gsBasis (more general)
-function uniformRefine end
+# uniformRefine! is documented below for gsBasis (more general)
+function uniformRefine! end
 # gsBasis methods (applicable to all basis types)
 
 @doc """
@@ -498,7 +501,7 @@ Boolean indicating whether the basis function is active at the point
 function isActive end
 
 @doc """
-    degreeElevate(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
+    degreeElevate!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
 
 Elevate the polynomial degree of a basis or geometry.
 
@@ -510,10 +513,10 @@ Elevate the polynomial degree of a basis or geometry.
 # Note
 This operation modifies the object in-place.
 """
-function degreeElevate end
+function degreeElevate! end
 
 @doc """
-    degreeReduce(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
+    degreeReduce!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
 
 Reduce the polynomial degree of a basis or geometry.
 
@@ -525,10 +528,10 @@ Reduce the polynomial degree of a basis or geometry.
 # Note
 This operation modifies the object in-place.
 """
-function degreeReduce end
+function degreeReduce! end
 
 @doc """
-    degreeIncrease(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
+    degreeIncrease!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
 
 Increase the polynomial degree of a basis or geometry.
 
@@ -540,10 +543,10 @@ Increase the polynomial degree of a basis or geometry.
 # Note
 This operation modifies the object in-place.
 """
-function degreeIncrease end
+function degreeIncrease! end
 
 @doc """
-    degreeDecrease(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
+    degreeDecrease!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
 
 Decrease the polynomial degree of a basis or geometry.
 
@@ -555,10 +558,10 @@ Decrease the polynomial degree of a basis or geometry.
 # Note
 This operation modifies the object in-place.
 """
-function degreeDecrease end
+function degreeDecrease! end
 
 @doc """
-    elevateContinuity(basis::gsBasis, i::Int=1, dir::Int=-1)
+    elevateContinuity!(basis::gsBasis, i::Int=1, dir::Int=-1)
 
 Elevate the continuity of the basis.
 
@@ -573,10 +576,10 @@ Elevates continuity by increasing the polynomial degree and adjusting knot multi
 # Note
 This operation modifies the basis in-place.
 """
-function elevateContinuity end
+function elevateContinuity! end
 
 @doc """
-    reduceContinuity(basis::gsBasis, i::Int=1, dir::Int=-1)
+    reduceContinuity!(basis::gsBasis, i::Int=1, dir::Int=-1)
 
 Reduce the continuity of the basis.
 
@@ -588,10 +591,10 @@ Reduce the continuity of the basis.
 # Note
 This operation modifies the basis in-place.
 """
-function reduceContinuity end
+function reduceContinuity! end
 
 @doc """
-    setDegree(basis::gsBasis, i::Int)
+    setDegree!(basis::gsBasis, i::Int)
 
 Set the polynomial degree of the basis to a specific value.
 
@@ -602,10 +605,10 @@ Set the polynomial degree of the basis to a specific value.
 # Note
 This operation modifies the basis in-place.
 """
-function setDegree end
+function setDegree! end
 
 @doc """
-    setDegreePreservingMultiplicity(basis::gsBasis, i::Int)
+    setDegreePreservingMultiplicity!(basis::gsBasis, i::Int)
 
 Set the polynomial degree while preserving knot multiplicities.
 
@@ -616,10 +619,10 @@ Set the polynomial degree while preserving knot multiplicities.
 # Note
 This operation modifies the basis in-place.
 """
-function setDegreePreservingMultiplicity end
+function setDegreePreservingMultiplicity! end
 
 @doc """
-    reverse(basis::gsBasis)
+    reverse!(basis::gsBasis)
 
 Reverse the basis (flip the parametric direction).
 
@@ -629,7 +632,7 @@ Reverse the basis (flip the parametric direction).
 # Note
 This operation modifies the basis in-place.
 """
-function reverse end
+function reverse! end
 
 @doc """
     eval!(obj::Union{gsBasis, gsGeometry}, u::Vector{Float64}, out::gsMatrix{Float64})
@@ -840,7 +843,7 @@ A matrix of second derivative values
 function deriv2Func end
 
 @doc """
-    uniformRefine(basis::gsBasis, numKnots::Int=1, mul::Int=1)
+    uniformRefine!(basis::gsBasis, numKnots::Int=1, mul::Int=1)
 
 Uniformly refine the basis by inserting knots.
 
@@ -852,10 +855,10 @@ Uniformly refine the basis by inserting knots.
 # Note
 This operation modifies the basis in-place.
 """
-function uniformRefine end
+function uniformRefine! end
 
 @doc """
-    uniformCoarsen(basis::gsBasis, numKnots::Int=1)
+    uniformCoarsen!(basis::gsBasis, numKnots::Int=1)
 
 Uniformly coarsen the basis by removing knots.
 
@@ -866,10 +869,10 @@ Uniformly coarsen the basis by removing knots.
 # Note
 This operation modifies the basis in-place.
 """
-function uniformCoarsen end
+function uniformCoarsen! end
 
 @doc """
-    uniformRefine_withCoefs(basis::gsBasis, coefs::Matrix{Float64}, numKnots::Int=1, mul::Int=1)
+    uniformRefine_withCoefs!(basis::gsBasis, coefs::Matrix{Float64}, numKnots::Int=1, mul::Int=1)
 
 Uniformly refine the basis and update control point coefficients accordingly.
 
@@ -885,7 +888,22 @@ This function refines the basis and automatically computes the new control point
 # Note
 Both the basis and coefficients are modified in-place.
 """
-function uniformRefine_withCoefs end
+function uniformRefine_withCoefs! end
+
+
+@doc raw"""
+    kontSpans(basis::gsBasis)
+
+Returns a list of the Knot Spans, i.e. elements in reference space.
+
+# Common Methods
+- [`centerPoint`](@ref)
+- [`lowerCorner`](@ref)
+- [`upperCorner`](@ref)
+
+"""
+function knotSpans end
+
 
 # BSpline methods
 
@@ -928,8 +946,8 @@ function numCoefs end
 
 # knots already documented above
 
-# insertKnot already documented above
-function insertKnot end
+# insertKnot! already documented above
+function insertKnot! end
 
 # degree already documented above
 function degree end
@@ -1205,11 +1223,11 @@ function TensorBSpline end
 # insertKnot already documented above
 function insertKnot end
 
-# uniformRefine already documented above
-function uniformRefine end
+# uniformRefine! already documented above
+function uniformRefine! end
 
-# uniformCoarsen already documented above
-function uniformCoarsen end
+# uniformCoarsen! already documented above
+function uniformCoarsen! end
 
 # degree already documented above
 function degree end
@@ -1279,11 +1297,11 @@ A vector of all weights
 """
 function weights end
 
-# insertKnot already documented above
-function insertKnot end
+# insertKnot! already documented above
+function insertKnot! end
 
-# uniformRefine already documented above
-function uniformRefine end
+# uniformRefine! already documented above
+function uniformRefine! end
 
 # uniformCoarsen already documented above for gsBasis
 function uniformCoarsen end
@@ -1346,8 +1364,8 @@ function insertKnot end
 # uniformRefine already documented above
 function uniformRefine end
 
-# uniformCoarsen already documented above
-function uniformCoarsen end
+# uniformCoarsen! already documented above
+function uniformCoarsen! end
 
 # degree already documented above
 function degree end
@@ -1511,10 +1529,62 @@ RuntimeError if indices are out of bounds
 """
 function value end
 
+# Knot Spans
+
+@doc """
+    centerPoint(knotSpan::KnotSpan)
+
+returns the center point of a knot span in parametric coordinates.
+"""
+function centerPoint end
+
+@doc """
+    lowerCorner(knotSpan::KnotSpan)
+
+returns the lower corner point of a knot span in parametric coordinates.
+"""
+function lowerCorner end
+
+@doc """
+    upperCorner(knotSpan::KnotSpan)
+
+returns the upper corner point of a knot span in parametric coordinates.
+"""
+function upperCorner end
+
+
 # Geometry Constructor Functions
 
 @doc """
-    createBSplineRectangle(; low_x=0, low_y=0, upp_x=1, upp_y=1, turndeg=0)
+    createBSplineUnitInterval(deg::Int)
+
+Create a B-spline basis on the unit interval [0, 1].
+
+# Arguments
+- `deg`: Polynomial degree of the basis
+
+# Returns
+A BSplineBasis of degree `deg` defined on the parametric domain [0, 1]
+
+# Details
+This is a convenience function for creating a standard univariate B-spline basis on the unit interval with clamped knot vector.
+
+# Examples
+```julia
+# Linear B-spline basis on [0, 1]
+basis_linear = createBSplineUnitInterval(1)
+
+# Quadratic B-spline basis on [0, 1]
+basis_quad = createBSplineUnitInterval(2)
+
+# Cubic B-spline basis on [0, 1]
+basis_cubic = createBSplineUnitInterval(3)
+```
+"""
+function createBSplineUnitInterval end
+
+@doc """
+    createBSplineRectangle(low_x=0, low_y=0, upp_x=1, upp_y=1, turndeg=0)
 
 Create a B-spline rectangular patch.
 
@@ -1540,8 +1610,8 @@ rect = createBSplineRectangle(low_x=-1, low_y=-1, upp_x=2, upp_y=3)
 function createBSplineRectangle end
 
 @doc """
-    createBSplineTrapezium(; Lbot=1, Ltop=0.5, H=1, d=0, turndeg=0)
-    createBSplineTrapezium(Ax, Ay, Bx, By, Cx, Cy, Dx, Dy; turndeg=0)
+    createBSplineTrapezium(Lbot=1, Ltop=0.5, H=1, d=0, turndeg=0)
+    createBSplineTrapezium(Ax, Ay, Bx, By, Cx, Cy, Dx, Dy, turndeg=0)
 
 Create a B-spline trapezoidal patch.
 
@@ -1576,8 +1646,8 @@ trap = createBSplineTrapezium(0, 0, 2, 0, 1.5, 1, 0.5, 1)
 function createBSplineTrapezium end
 
 @doc """
-    createNurbsArcTrapezium(; Lbot=1, Ltop=0.5, H=1, d=0, turndeg=0)
-    createNurbsArcTrapezium(Ax, Ay, Bx, By, Cx, Cy, Dx, Dy; turndeg=0)
+    createNurbsArcTrapezium(Lbot=1, Ltop=0.5, H=1, d=0, turndeg=0)
+    createNurbsArcTrapezium(Ax, Ay, Bx, By, Cx, Cy, Dx, Dy, turndeg=0)
 
 Create a NURBS trapezoidal patch with curved sides.
 
@@ -1606,7 +1676,7 @@ Unlike the B-spline version, this creates a trapezium with smoothly curved sides
 function createNurbsArcTrapezium end
 
 @doc """
-    createBSplineAmoeba(; r=1, x=0, y=0)
+    createBSplineAmoeba(r=1, x=0, y=0)
 
 Create an amoeba-shaped B-spline patch.
 
@@ -1624,7 +1694,7 @@ Creates an organic, blob-like shape useful for testing and demonstrations.
 function createBSplineAmoeba end
 
 @doc """
-    createBSplineAmoebaBig(; r=1, x=0, y=0)
+    createBSplineAmoebaBig(r=1, x=0, y=0)
 
 Create a larger amoeba-shaped B-spline patch with more detail.
 
@@ -1639,7 +1709,7 @@ A TensorBSpline{2} representing a larger amoeba shape
 function createBSplineAmoebaBig end
 
 @doc """
-    createBSplineAustria(; r=1, x=0, y=0)
+    createBSplineAustria(r=1, x=0, y=0)
 
 Create an Austria-shaped B-spline patch.
 
@@ -1654,7 +1724,7 @@ A TensorBSpline{2} representing the outline of Austria
 function createBSplineAustria end
 
 @doc """
-    createBSplineFish(; r=1, x=0, y=0)
+    createBSplineFish(r=1, x=0, y=0)
 
 Create a fish-shaped B-spline patch.
 
@@ -1669,7 +1739,7 @@ A TensorBSpline{2} representing a fish shape
 function createBSplineFish end
 
 @doc """
-    createBSplineAmoeba3degree(; r=1, x=0, y=0)
+    createBSplineAmoeba3degree(r=1, x=0, y=0)
 
 Create a cubic (degree 3) amoeba-shaped B-spline patch.
 
@@ -1697,7 +1767,7 @@ This benchmark geometry is commonly used for testing structural mechanics proble
 function createNurbsQrtPlateWHoleC0 end
 
 @doc """
-    createBSplineTriangle(; H=1, W=1)
+    createBSplineTriangle(H=1, W=1)
 
 Create a triangular B-spline patch.
 
@@ -1709,6 +1779,481 @@ Create a triangular B-spline patch.
 A TensorBSpline{2} representing a triangular patch
 """
 function createBSplineTriangle end
+
+@doc """
+    createBSplineSquare(r=1, x=0, y=0)
+
+Create a square B-spline patch.
+
+# Arguments
+- `r`: Radius/scale factor (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+
+# Returns
+A TensorBSpline{2} representing a square patch
+"""
+function createBSplineSquare end
+
+@doc """
+    createBSplineCube(r=1, x=0, y=0, z=0)
+
+Create a cube B-spline volume.
+
+# Arguments
+- `r`: Radius/scale factor (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+- `z`: Center z-coordinate (default: 0)
+
+# Returns
+A TensorBSpline{3} representing a cubic volume
+"""
+function createBSplineCube end
+
+@doc """
+    createBSplineHalfCube(r=1, x=0, y=0, z=0)
+
+Create a half-cube B-spline volume.
+
+# Arguments
+- `r`: Radius/scale factor (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+- `z`: Center z-coordinate (default: 0)
+
+# Returns
+A TensorBSpline{3} representing a half-cubic volume
+"""
+function createBSplineHalfCube end
+
+@doc """
+    createNurbsCube(r=1, x=0, y=0, z=0)
+
+Create a cube NURBS volume.
+
+# Arguments
+- `r`: Radius/scale factor (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+- `z`: Center z-coordinate (default: 0)
+
+# Returns
+A TensorNurbs{3} representing a cubic volume
+"""
+function createNurbsCube end
+
+@doc """
+    createNurbsQuarterAnnulus(r0=1, r1=2)
+
+Create a quarter annulus (ring) NURBS patch.
+
+# Arguments
+- `r0`: Inner radius (default: 1)
+- `r1`: Outer radius (default: 2)
+
+# Returns
+A TensorNurbs{2} representing a quarter annulus
+"""
+function createNurbsQuarterAnnulus end
+
+@doc """
+    createNurbsAnnulus(r0=1, r1=2)
+
+Create a full annulus (ring) NURBS patch.
+
+# Arguments
+- `r0`: Inner radius (default: 1)
+- `r1`: Outer radius (default: 2)
+
+# Returns
+A TensorNurbs{2} representing a complete annulus
+"""
+function createNurbsAnnulus end
+
+@doc """
+    createNurbsSphere(r=1, x=0, y=0, z=0)
+
+Create a NURBS sphere.
+
+# Arguments
+- `r`: Radius (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+- `z`: Center z-coordinate (default: 0)
+
+# Returns
+A TensorNurbs{3} representing a sphere
+"""
+function createNurbsSphere end
+
+@doc """
+    createNurbsCircle(r=1, x=0, y=0)
+
+Create a NURBS circle curve.
+
+# Arguments
+- `r`: Radius (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+
+# Returns
+A Nurbs curve representing a circle
+"""
+function createNurbsCircle end
+
+@doc """
+    createBSplineFatCircle(r=1, x=0, y=0)
+
+Create a B-spline circle patch (disk).
+
+# Arguments
+- `r`: Radius (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+
+# Returns
+A TensorBSpline{2} representing a fat circle (disk-like patch)
+"""
+function createBSplineFatCircle end
+
+@doc """
+    createBSplineFatDisk(r=1, x=0, y=0)
+
+Create a B-spline disk patch.
+
+# Arguments
+- `r`: Radius (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+
+# Returns
+A TensorBSpline{2} representing a disk patch
+"""
+function createBSplineFatDisk end
+
+@doc """
+    createNurbsCurve1(r=1, x=0, y=0)
+
+Create a NURBS curve (variant 1).
+
+# Arguments
+- `r`: Radius/scale factor (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+
+# Returns
+A Nurbs curve
+"""
+function createNurbsCurve1 end
+
+@doc """
+    createNurbsCurve2(r=1, x=0, y=0)
+
+Create a NURBS curve (variant 2).
+
+# Arguments
+- `r`: Radius/scale factor (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+
+# Returns
+A Nurbs curve
+"""
+function createNurbsCurve2 end
+
+@doc """
+    createNurbsBean(r=1, x=0, y=0)
+
+Create a bean-shaped NURBS patch.
+
+# Arguments
+- `r`: Radius/scale factor (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+
+# Returns
+A TensorNurbs{2} representing a bean shape
+"""
+function createNurbsBean end
+
+@doc """
+    createBSplineE(r=1, x=0, y=0)
+
+Create a capital E-shaped B-spline patch.
+
+# Arguments
+- `r`: Radius/scale factor (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+
+# Returns
+A TensorBSpline{2} representing the letter E
+"""
+function createBSplineE end
+
+@doc """
+    createNurbsAmoebaFull(r=1, x=0, y=0)
+
+Create a full amoeba-shaped NURBS patch.
+
+# Arguments
+- `r`: Radius/scale factor (default: 1)
+- `x`: Center x-coordinate (default: 0)
+- `y`: Center y-coordinate (default: 0)
+
+# Returns
+A TensorNurbs{2} representing a full amoeba shape
+"""
+function createNurbsAmoebaFull end
+
+@doc """
+    createBSplineSegment(u0=0, u1=1)
+
+Create a B-spline line segment.
+
+# Arguments
+- `u0`: Start parameter (default: 0)
+- `u1`: End parameter (default: 1)
+
+# Returns
+A Nurbs curve representing a line segment
+
+# Details
+Creates a simple parametric line segment that can be used as a basis for other constructions.
+"""
+function createBSplineSegment end
+
+# Geometry Transformation Functions
+
+@doc """
+    rotate2D(geo::TensorBSpline{2}, turndeg::Float64=0, Tx::Float64=0, Ty::Float64=0)
+
+Rotate a 2D geometry around the origin.
+
+# Arguments
+- `geo`: A 2D B-spline or NURBS geometry
+- `turndeg`: Rotation angle in degrees (default: 0)
+- `Tx`: Translation in x-direction (default: 0)
+- `Ty`: Translation in y-direction (default: 0)
+
+# Returns
+A new rotated geometry
+
+# Details
+Applies a 2D rotation transformation to the geometry around the origin, with optional translation.
+"""
+function rotate2D end
+
+@doc """
+    rotate2D!(geo::gsGeometry, turndeg::Float64=0, Tx::Float64=0, Ty::Float64=0)
+
+In-place 2D rotation of a geometry.
+
+# Arguments
+- `geo`: A 2D geometry (modified in-place)
+- `turndeg`: Rotation angle in degrees (default: 0)
+- `Tx`: Translation in x-direction (default: 0)
+- `Ty`: Translation in y-direction (default: 0)
+
+# Note
+This operation modifies the geometry in-place.
+"""
+function rotate2D! end
+
+@doc """
+    rotate3D!(geo::gsGeometry, phi_z::Float64=0, phi_y::Float64=0, phi_x::Float64=0)
+
+In-place 3D rotation of a geometry.
+
+# Arguments
+- `geo`: A 3D geometry (modified in-place)
+- `phi_z`: Rotation angle around z-axis in degrees (default: 0)
+- `phi_y`: Rotation angle around y-axis in degrees (default: 0)
+- `phi_x`: Rotation angle around x-axis in degrees (default: 0)
+
+# Details
+Applies 3D Euler angle rotations (Z-Y-X convention) to the geometry.
+
+# Note
+This operation modifies the geometry in-place.
+"""
+function rotate3D! end
+
+@doc """
+    shift2D(geo::TensorBSpline{2}, dx::Float64=0, dy::Float64=0, dz::Float64=0)
+
+Translate a 2D geometry.
+
+# Arguments
+- `geo`: A 2D B-spline or NURBS geometry
+- `dx`: Translation in x-direction (default: 0)
+- `dy`: Translation in y-direction (default: 0)
+- `dz`: Translation in z-direction (default: 0)
+
+# Returns
+A new translated geometry
+"""
+function shift2D end
+
+@doc """
+    shift2D!(geo::gsGeometry, dx::Float64=0, dy::Float64=0, dz::Float64=0)
+
+In-place translation of a 2D geometry.
+
+# Arguments
+- `geo`: A 2D geometry (modified in-place)
+- `dx`: Translation in x-direction (default: 0)
+- `dy`: Translation in y-direction (default: 0)
+- `dz`: Translation in z-direction (default: 0)
+
+# Note
+This operation modifies the geometry in-place.
+"""
+function shift2D! end
+
+@doc """
+    mirror2D(geo::TensorBSpline{2}, axis::Bool)
+
+Mirror a 2D geometry across an axis.
+
+# Arguments
+- `geo`: A 2D B-spline or NURBS geometry
+- `axis`: Axis to mirror across (false for x-axis, true for y-axis)
+
+# Returns
+A new mirrored geometry
+"""
+function mirror2D end
+
+@doc """
+    mirror2D!(geo::gsGeometry, axis::Bool)
+
+In-place mirroring of a 2D geometry.
+
+# Arguments
+- `geo`: A 2D geometry (modified in-place)
+- `axis`: Axis to mirror across (false for x-axis, true for y-axis)
+
+# Note
+This operation modifies the geometry in-place.
+"""
+function mirror2D! end
+
+@doc """
+    scale2D(geo::TensorBSpline{2}, factor::Float64=1.0)
+
+Scale a 2D geometry uniformly.
+
+# Arguments
+- `geo`: A 2D B-spline or NURBS geometry
+- `factor`: Scaling factor (default: 1.0)
+
+# Returns
+A new scaled geometry
+"""
+function scale2D end
+
+@doc """
+    scale2DVec(geo::TensorBSpline{2}, factors::Vector{Float64})
+
+Scale a 2D geometry non-uniformly.
+
+# Arguments
+- `geo`: A 2D B-spline or NURBS geometry
+- `factors`: Scaling factors for each axis [scale_x, scale_y]
+
+# Returns
+A new scaled geometry
+"""
+function scale2DVec end
+
+@doc """
+    scale2D!(geo::gsGeometry, factor::Float64=1.0)
+
+In-place uniform scaling of a 2D geometry.
+
+# Arguments
+- `geo`: A 2D geometry (modified in-place)
+- `factor`: Scaling factor (default: 1.0)
+
+# Note
+This operation modifies the geometry in-place.
+"""
+function scale2D! end
+
+@doc """
+    scale2DVec!(geo::gsGeometry, factors::Vector{Float64})
+
+In-place non-uniform scaling of a 2D geometry.
+
+# Arguments
+- `geo`: A 2D geometry (modified in-place)
+- `factors`: Scaling factors for each axis [scale_x, scale_y]
+
+# Note
+This operation modifies the geometry in-place.
+"""
+function scale2DVec! end
+
+# Paraview Export Functions
+
+@doc """
+    writeParaview(geo::gsGeometry, fn::String; npts=1000, mesh=false, ctrlNet=false)
+    writeParaview(basis::gsBasis, fn::String; npts=1000, mesh=false)
+    writeParaview(basis::gsBasis, indices::Vector{Int}, fn::String; npts=1000, mesh=false)
+
+Export TinyGismo geometries and bases to Paraview VTK files.
+
+# Arguments
+- `geo`: Geometry to export (B-spline or NURBS)
+- `basis`: Basis to export (B-spline or NURBS)
+- `indices`: Basis function indices to export (1-indexed)
+- `fn`: Output filename
+- `npts`: Number of sampling points (default: 1000)
+- `mesh`: Plot parameter mesh (default: false)
+- `ctrlNet`: Plot control net (geometry export only, default: false)
+
+# Details
+- Geometry export writes the shape with optional mesh and control net.
+- Basis export writes all basis functions, or only the specified indices.
+"""
+function writeParaview end
+
+@doc """
+    writeParaviewBasisFnct(i::Int, basis::gsBasis, fn::String; npts=1000)
+
+Export a single basis function to a Paraview file.
+
+# Arguments
+- `i`: Index of the basis function (1-indexed)
+- `basis`: The B-spline or NURBS basis
+- `fn`: Output filename
+- `npts`: Number of sampling points (default: 1000)
+
+# Details
+Exports a single basis function as a curve/surface in VTK format.
+"""
+function writeParaviewBasisFnct end
+
+@doc """
+    writeParaviewPoints(points::Matrix{Float64}, fn::String)
+    writeParaviewPoints(X::Matrix{Float64}, Y::Matrix{Float64}, fn::String)
+    writeParaviewPoints(X::Matrix{Float64}, Y::Matrix{Float64}, Z::Matrix{Float64}, fn::String)
+    writeParaviewPoints(X::Matrix{Float64}, Y::Matrix{Float64}, Z::Matrix{Float64}, V::Matrix{Float64}, fn::String)
+
+Export 2D/3D point sets and tensor-structured grids to Paraview.
+
+# Arguments
+- `points`: Matrix with points as columns (2 or 3 rows)
+- `X`, `Y`, `Z`: 1×n coordinate arrays for structured point sets
+- `V`: 1×n scalar values for each point (optional)
+- `fn`: Output filename
+
+# Details
+- Supports simple point clouds and structured grids with optional scalar data.
+"""
+function writeParaviewPoints end
 
 # File I/O Functions
 
@@ -1744,3 +2289,43 @@ basis = readFile(TensorBSplineBasis{2}, "basis.xml")
 Reads Gismo XML format files containing geometric or basis function data.
 """
 function readFile end
+# Matrix and Vector Methods
+
+# @doc """
+#     size(obj::Union{gsMatrix, gsVector})
+
+# Get the total number of elements in a matrix or vector.
+
+# # Arguments
+# - `obj`: A gsMatrix or gsVector object
+
+# # Returns
+# The total number of elements (rows × columns for matrices, or length for vectors)
+# """
+# function size end
+
+@doc """
+    rows(obj::Union{gsMatrix, gsVector})
+
+Get the number of rows in a matrix or vector.
+
+# Arguments
+- `obj`: A gsMatrix or gsVector object
+
+# Returns
+The number of rows
+"""
+function rows end
+
+@doc """
+    cols(obj::Union{gsMatrix, gsVector})
+
+Get the number of columns in a matrix or vector.
+
+# Arguments
+- `obj`: A gsMatrix or gsVector object
+
+# Returns
+The number of columns (1 for vectors)
+"""
+function cols end

@@ -11,6 +11,7 @@ Pages = [
     "03_geometries.md",
     "04_factories.md",
     "05_utilities.md",
+    "06_io.md",
 ]
 Depth = 2
 ```
@@ -24,5 +25,6 @@ TinyGismo.jl provides an alternative Julia interface to the G+Smo (Geometry + Si
 - **Geometries**: Spline curves, surfaces, and volumes for geometric modeling
 - **Factories**: Convenient constructors for standard geometric shapes
 - **Utilities**: Matrix types, file I/O, and helper functions
+- **Input/Output**: File I/O and visualization with Paraview
 
 The official Julia bindings can be found at [Gismo.jl](https://github.com/gismo/Gismo.jl).

@@ -14,26 +14,64 @@ function __init__()
     return @initcxx
 end
 
+# Core Types
+# Basis types and geometry types exposed by the module
 export BSplineBasis, BSpline, TensorBSplineBasis, TensorBSpline, KnotVector
 export NurbsBasis, TensorNurbsBasis, Nurbs, TensorNurbs
 
-export degreeElevate, degreeReduce, degreeIncrease, degreeDecrease, elevateContinuity, reduceContinuity, setDegree, setDegreePreservingMultiplicity
-export insertKnot, insertKnots, removeKnot, uniformRefine, uniformCoarsen, uniformRefine_withCoefs, boundary
+# Basis/Geometry Modification
+# Degree and continuity operations (in-place)
+export degreeElevate!, degreeReduce!, degreeIncrease!, degreeDecrease!
+export elevateContinuity!, reduceContinuity!
+export setDegree!, setDegreePreservingMultiplicity!
+export reverse!
 
-export eval!, deriv!, deriv2!, evalSingle!, evalFunc!
-export _eval, deriv, deriv2, evalSingle, evalFunc
+# Refinement operations (in-place)
+export insertKnot!, insertKnots!, removeKnot!
+export uniformRefine!, uniformCoarsen!, uniformRefine_withCoefs!
 
-export numElements, multiplicities, uSize, knotContainer
-export numActive, numTotalElements, numActive!, numCoefs
-export coefs, coefsSize, coefAtCorner
-export closestPointTo, elementIndex, elementInSupportOf, active!, isActive
+# Boundary extraction
+export boundary
+
+# Knot span helpers
+export centerPoint, lowerCorner, upperCorner, knotSpans
+
+# Evaluation and derivatives
+export eval!, _eval
+export evalSingle!, evalSingle
+export evalFunc!, evalFunc
+export deriv!, deriv, deriv2!, deriv2
+export derivSingle!, derivSingle
+export deriv2Single!, deriv2Single
+export derivFunc, deriv2Func
+
+# Queries
+## Basis/knot vector queries
+export numElements, numTotalElements
+export multiplicities, uSize, knotContainer
+export elementIndex, elementInSupportOf, active!, isActive
+export numActive, numActive!
+
+## Geometry queries
+export numCoefs, coefs, coefsSize, coefAtCorner
+export closestPointTo
 export targetDim, coefDim, geoDim, parDim
+
+# Matrix/Vector utilities
 export gsGeometry, gsMatrix, gsVector
 export toMatrix, toVector
 
+# I/O
 export readFile
+export writeParaview, writeParaviewBasisFnct, writeParaviewPoints
 
+# Factory functions (geometry constructors)
 export createBSplineRectangle, createBSplineTrapezium, createNurbsArcTrapezium, createBSplineTriangle
+export createBSplineSquare, createBSplineSegment, createBSplineUnitInterval
+export createBSplineCube, createBSplineHalfCube, createNurbsCube, createNurbsSphere
+export createNurbsCircle, createBSplineFatCircle, createBSplineFatDisk
+export createNurbsQuarterAnnulus, createNurbsAnnulus
+export createNurbsCurve1, createNurbsCurve2
 
 # Mapping Base.size
 @doc """
@@ -117,6 +155,10 @@ Default constructor for gsVector with Float64 element type.
 This is a convenience constructor that defaults to `gsVector{Float64}(args...)`.
 """
 gsVector(args...) = gsVector{Float64}(args...)
+
+
+Base.IndexStyle(::gsMatrix) = IndexLinear()
+Base.getindex(v::gsMatrix, i::Int, j::Int) = TinyGismo.value(v, i, j)
 
 # Documentation
 include("stubs.jl")

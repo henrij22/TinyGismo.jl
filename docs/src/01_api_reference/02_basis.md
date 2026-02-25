@@ -8,61 +8,6 @@ Basis functions are the building blocks of spline spaces. This module provides b
 TinyGismo.gsBasis
 ```
 
-## B-Spline Bases
-
-### Constructors
-
-```@docs
-BSplineBasis
-TensorBSplineBasis
-```
-
-### Query Functions
-
-```@docs
-TinyGismo.knots
-TinyGismo.knot
-size(::BSplineBasis)
-size(::TensorBSplineBasis)
-size(::NurbsBasis)
-size(::TensorNurbsBasis)
-numElements
-numTotalElements
-TinyGismo.degree
-TinyGismo.order
-```
-
-### Active Basis Functions
-
-```@docs
-numActive
-numActive!
-TinyGismo.component
-```
-
-### Refinement Operations
-
-```@docs
-insertKnot
-removeKnot
-insertKnots
-```
-
-## NURBS Bases
-
-### Constructors
-
-```@docs
-NurbsBasis
-TensorNurbsBasis
-```
-
-### Query Functions
-
-```@docs
-TinyGismo.weights
-```
-
 ## Generic Basis Operations
 
 These methods work on all basis types (B-spline and NURBS).
@@ -70,6 +15,7 @@ These methods work on all basis types (B-spline and NURBS).
 ### Element and Activity Queries
 
 ```@docs
+knotSpans
 elementIndex
 elementInSupportOf
 active!
@@ -79,20 +25,20 @@ isActive
 ### Degree and Continuity Operations
 
 ```@docs
-degreeElevate
-degreeReduce
-degreeIncrease
-degreeDecrease
-elevateContinuity
-reduceContinuity
-setDegree
-setDegreePreservingMultiplicity
+degreeElevate!
+degreeReduce!
+degreeIncrease!
+degreeDecrease!
+elevateContinuity!
+reduceContinuity!
+setDegree!
+setDegreePreservingMultiplicity!
 ```
 
 ### Geometric Operations
 
 ```@docs
-TinyGismo.reverse
+TinyGismo.reverse!
 ```
 
 ### Evaluation
@@ -124,7 +70,62 @@ TinyGismo.deriv2Func
 ### Refinement
 
 ```@docs
-uniformRefine
-uniformCoarsen
-uniformRefine_withCoefs
+uniformRefine!
+uniformCoarsen!
+uniformRefine_withCoefs!
+```
+
+## B-Spline Bases
+
+### Constructors
+
+```@docs
+BSplineBasis
+TensorBSplineBasis
+```
+
+### Query Functions
+
+```@docs
+TinyGismo.knots
+TinyGismo.knot
+size(::BSplineBasis)
+size(::TensorBSplineBasis)
+size(::NurbsBasis)
+size(::TensorNurbsBasis)
+numElements
+numTotalElements
+TinyGismo.degree
+TinyGismo.order
+TinyGismo.component
+```
+
+### Active Basis Functions
+
+```@docs
+numActive
+numActive!
+```
+
+### Refinement Operations
+
+```@docs
+insertKnot!
+removeKnot!
+insertKnots!
+```
+
+## NURBS Bases
+
+### Constructors
+
+```@docs
+NurbsBasis
+TensorNurbsBasis
+```
+
+### Query Functions
+
+```@docs
+TinyGismo.weights
 ```
