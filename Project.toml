@@ -1,6 +1,6 @@
 name = "TinyGismo"
 uuid = "5750890c-44ac-400c-9e9d-1788b5a8ead6"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Henrik Jakob <jakob@ibb.uni-stuttgart.de>"]
 
 [workspace]
