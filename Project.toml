@@ -14,7 +14,7 @@ TinyGismo_jll = "7e61441e-6e6e-5c6f-8c66-76107880e13d"
 [compat]
 CxxWrap = "0.17.4"
 EnumX = "1"
-TinyGismo_jll = "0.1.10"
+TinyGismo_jll = "0.1.11"
 julia = "1.11"
 
 [extras]
