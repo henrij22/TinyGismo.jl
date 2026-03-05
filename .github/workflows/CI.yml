@@ -49,8 +49,8 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       # - uses: julia-actions/cache@v2
-      - name: Add custom Julia registry
-        run: julia -e 'using Pkg; Pkg.Registry.add(RegistrySpec(url="https://github.com/henrij22/JuliaRegistry.git"))'
+      - name: Add Julia registries
+        run: julia -e 'using Pkg; Pkg.Registry.add("General"); Pkg.Registry.add(RegistrySpec(url="https://github.com/henrij22/JuliaRegistry.git"))'
       
       - name: Build package
         run: julia --project -e 'using Pkg; Pkg.build()'
