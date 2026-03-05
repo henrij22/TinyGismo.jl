@@ -49,8 +49,8 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v2^
-        with:
-          cache-registries: false
+        # with:
+          # cache-registries: false
       - name: Add Julia registries
         run: julia -e 'using Pkg; Pkg.Registry.add("General"); Pkg.Registry.add(RegistrySpec(url="https://github.com/henrij22/JuliaRegistry.git"))'
       
