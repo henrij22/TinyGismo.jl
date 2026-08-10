@@ -56,7 +56,8 @@ removeKnot!(b, 0.1)
 knotContainer(knots(b))
 ```
 
-Each inserted knot adds exactly one basis function and one element:
+Every inserted **copy** adds one basis function, but only a **new knot value** adds an
+element — the two insertions of `0.75` above added two functions and a single element:
 
 ```@example refine
 Int(size(b)), Int(numElements(b)), Int(uSize(knots(b)))

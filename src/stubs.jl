@@ -1349,7 +1349,7 @@ function parDim end
     TensorBSpline{1}(basis::BSplineBasis{1}, coefs::Union{Vector{Float64}, Matrix{Float64}})
     TensorBSpline{2}(basis::TensorBSplineBasis{2}, coefs::Matrix{Float64})
     TensorBSpline{3}(basis::TensorBSplineBasis{3}, coefs::Matrix{Float64})
-    TensorBSpline{N}(corner::Matrix{Float64}, kv1::KnotVector, kv2::KnotVector)
+    TensorBSpline{2}(corner::Matrix{Float64}, kv1::KnotVector, kv2::KnotVector)
 
 Construct a tensor product B-spline surface or volume.
 
@@ -1358,7 +1358,10 @@ Construct a tensor product B-spline surface or volume.
 - `coefs`: Control point coefficients — one row per control point, one column per physical
   coordinate, ordered lexicographically with the first parametric direction running fastest
 - `corner`: A `4 × 3` matrix of three-dimensional corner points listed **counterclockwise**
-  around the patch; the result is a surface with `targetDim == 3`
+  around the patch; the result is a surface with `targetDim == 3`. Four corners and two knot
+  vectors describe a bivariate patch, so only `TensorBSpline{2}` is meaningful here — the
+  method is registered for the other dimensions too, but `{1}` silently builds nonsense and
+  `{3}` segfaults.
 - `kv1`, `kv2`: Knot vectors for each parametric direction
 
 # Returns
@@ -1499,8 +1502,7 @@ A TensorNurbs object (surface or volume)
 # Details
 Tensor product NURBS surfaces and volumes are formed by taking the tensor product of univariate NURBS bases. They combine the flexibility of tensor products with the rational properties of NURBS, enabling exact representation of complex shapes including quadric surfaces.
 
-All methods from `gsGeometry` are available for TensorNurbs objects — unlike the univariate
-[`Nurbs`](@ref).
+All methods from `gsGeometry` are available for TensorNurbs objects.
 
 # Examples
 ```julia

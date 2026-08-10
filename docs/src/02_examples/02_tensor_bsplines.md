@@ -174,7 +174,7 @@ tnb = TensorNurbsBasis{2}(kv_u, kv_v, weightmatrix)
 Int(size(tnb))
 ```
 
-Unlike univariate [`Nurbs`](@ref), tensor product NURBS support the full geometry interface.
+Tensor product NURBS support the full geometry interface, as univariate [`Nurbs`](@ref) does.
 The quarter annulus is the standard example — an *exact* circular ring, which no polynomial
 B-spline can represent:
 
