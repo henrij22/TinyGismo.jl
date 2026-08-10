@@ -47,7 +47,7 @@ closest point queries, and geometric refinement.
 gsGeometry
 
 @doc """
-    BSplineBasis(knotVector::gsKnotVector)
+    BSplineBasis(knotVector::KnotVector)
 
 Construct a univariate B-spline basis from a knot vector.
 
@@ -59,29 +59,31 @@ A B-spline basis object
 
 # Examples
 ```julia
-kv = gsKnotVector(...)
+kv = KnotVector([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
 basis = BSplineBasis(kv)
 ```
 """
 function BSplineBasis end
 
 @doc """
-    TensorBSplineBasis{2}(knotVector1::gsKnotVector, knotVector2::gsKnotVector)
-    TensorBSplineBasis{3}(knotVector1::gsKnotVector, knotVector2::gsKnotVector, knotVector3::gsKnotVector)
+    TensorBSplineBasis{2}(knotVector1::KnotVector, knotVector2::KnotVector)
 
-Construct a tensor product B-spline basis from knot vectors.
+Construct a bivariate tensor product B-spline basis from two knot vectors.
+
+The parametric dimension must be given explicitly as a type parameter; there is no
+unparameterized `TensorBSplineBasis(kv1, kv2)` convenience constructor.
 
 # Arguments
-- `knotVector1`, `knotVector2`, `[knotVector3]`: Knot vectors for each parametric direction
+- `knotVector1`, `knotVector2`: Knot vectors for each parametric direction
 
 # Returns
-A tensor product B-spline basis object (2D or 3D)
+A `TensorBSplineBasis{2}`
 
 # Examples
 ```julia
-kv1 = gsKnotVector(...)
-kv2 = gsKnotVector(...)
-basis = TensorBSplineBasis(kv1, kv2)
+kv1 = KnotVector([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+kv2 = KnotVector([0.0, 0.0, 1.0, 1.0])
+basis = TensorBSplineBasis{2}(kv1, kv2)
 ```
 """
 function TensorBSplineBasis end
@@ -115,31 +117,49 @@ The knot value at index `i`
 function knot end
 
 @doc """
-    size(basis::BSplineBasis)
-    size(basis::KnotVector)
-    size(obj::Union{gsMatrix, gsVector})
+    TinyGismo.size(obj)
 
-Get the number of basis functions, knotVector, matrix or vector.
+The raw C++ `size()` method: the number of basis functions of a basis, the number of knots
+of a knot vector, or the total number of entries of a matrix or vector.
 
 # Arguments
-- `obj`: The Object
+- `obj`: A basis, [`KnotVector`](@ref), [`gsMatrix`](@ref) or [`gsVector`](@ref)
 
 # Returns
-The number of basis functions in the basis or entries in the matrix or vector
+The count, as an unsigned integer
+
+# Note
+Prefer the `Base` methods, which need no `TinyGismo.` prefix:
+
+- `size(basis)` and `size(kv)` forward here and return the same count.
+- `size(m)` on a matrix or vector returns a **dimension tuple** instead, following the usual
+  `Base.size` contract, with `length(m)` giving the total entry count that this method
+  returns.
 """
 function size end
 
 @doc """
-    numElements(basis::BSplineBasis, side::Int=0)
+    numElements(basis::gsBasis)
+    numElements(basis::gsBasis, side::Int)
+    numElements(kv::KnotVector)
 
-Get the number of elements (knot spans) in the basis.
+Get the number of elements (knot spans).
+
+Without a second argument this is the total element count of the whole domain — the product
+over all parametric directions for a tensor product basis.
 
 # Arguments
-- `basis`: The B-spline basis
-- `side`: The side/direction to query (default: 0 for all sides)
+- `basis`: The basis
+- `side`: A **boxSide** (`1`/`2` west and east, `3`/`4` south and north), *not* a parametric
+  direction. The result is the number of elements lying along that boundary side. Passing `0`
+  (or `-1`) gives the total, as in the one-argument form.
 
 # Returns
-The number of elements in the specified direction
+The number of elements
+
+# Note
+To count elements **per parametric direction** on a tensor product basis, use
+[`TinyGismo.component`](@ref): `numElements(component(basis, i))`.
 """
 function numElements end
 
@@ -157,18 +177,29 @@ The total number of elements across all parametric directions
 function numTotalElements end
 
 @doc """
-    degree(obj::Union{gsBasis, KnotVector, gsGeometry}, i::Int)
+    degree(obj::Union{KnotVector, BSplineBasis, NurbsBasis, BSpline, Nurbs})
+    degree(obj::Union{TensorBSplineBasis, TensorNurbsBasis, TensorBSpline, TensorNurbs}, i::Int)
 
-Get the polynomial degree of the basis, knot vector, or geometry.
+Get the polynomial degree of a knot vector, basis or geometry.
 
-For univariate bases, returns a single degree. For tensor product bases, returns the degree in a specified direction.
+Knot vectors and univariate objects take no further argument. Tensor product objects
+**require** the parametric direction `i` (1-based), since the degree may differ per
+direction.
 
 # Arguments
-- `obj`: The B-spline basis, knot vector, or geometry object
-- `i`: The parametric direction (for tensor product bases, optional)
+- `obj`: The knot vector, basis or geometry object
+- `i`: The parametric direction, 1-based (tensor product objects only)
 
 # Returns
 The polynomial degree
+
+# Examples
+```julia
+kv = KnotVector([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+degree(kv)                            # 2, deduced from the end multiplicities
+degree(BSplineBasis(kv))              # 2
+degree(TensorBSplineBasis{2}(kv, kv), 1)
+```
 """
 function degree end
 
@@ -234,34 +265,29 @@ This operation modifies the basis in-place.
 function insertKnots! end
 
 @doc """
-    numActive(basis::TensorBSplineBasis, u::Vector{Float64})
+    numActive(basis::gsBasis)
 
-Get the number of active basis functions at a given parametric point.
+Get the number of basis functions that are nonzero on any single element.
 
-For tensor product bases, returns a vector with the number of active basis functions in each direction.
+This does not depend on the evaluation point: it is `p + 1` for a univariate basis of degree
+`p`, and the product of `pᵢ + 1` over the parametric directions of a tensor product basis.
 
 # Arguments
-- `basis`: The tensor product B-spline basis
-- `u`: The parametric point
+- `basis`: Any B-spline or NURBS basis, univariate or tensor product
 
 # Returns
-The number of active basis functions at point `u`
+The number of active basis functions per element
+
+# Examples
+```julia
+numActive(BSplineBasis(kv))               # p + 1
+numActive(TensorBSplineBasis{2}(k1, k2))  # (p1 + 1) * (p2 + 1)
+```
+
+# See Also
+- [`active!`](@ref) for the indices of those functions at a given point
 """
 function numActive end
-
-@doc """
-    numActive!(basis::TensorBSplineBasis, u::Vector{Float64}, out::Vector{Int})
-
-Get the number of active basis functions at a given parametric point (in-place).
-
-Stores the result in the output vector `out`.
-
-# Arguments
-- `basis`: The tensor product B-spline basis
-- `u`: The parametric point
-- `out`: Output vector to store the number of active basis functions in each direction (modified in-place)
-"""
-function numActive! end
 
 @doc """
     component(basis::TensorBSplineBasis, i::Int)
@@ -303,7 +329,7 @@ NURBS bases generalize B-spline bases by associating weights with control points
 
 # Examples
 ```julia
-kv = gsKnotVector(...)
+kv = KnotVector([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
 basis = NurbsBasis(kv)
 
 # With weights
@@ -315,26 +341,28 @@ function NurbsBasis end
 
 @doc """
     TensorNurbsBasis{2}(knotVector1::KnotVector, knotVector2::KnotVector, weights::Matrix{Float64})
-    TensorNurbsBasis{3}(knotVector1::KnotVector, knotVector2::KnotVector, knotVector3::KnotVector, weights::Matrix{Float64})
 
-Construct a tensor product NURBS basis from knot vectors and weights.
+Construct a bivariate tensor product NURBS basis from two knot vectors and weights.
+
+The parametric dimension must be given explicitly as a type parameter.
 
 # Arguments
-- `knotVector1`, `knotVector2`, `[knotVector3]`: Knot vectors for each parametric direction
-- `weights`: Control point weights arranged in a matrix
+- `knotVector1`, `knotVector2`: Knot vectors for each parametric direction
+- `weights`: One weight per basis function as a single-column matrix, ordered
+  lexicographically with the first parametric direction running fastest
 
 # Returns
-A tensor product NURBS basis object (2D or 3D)
+A `TensorNurbsBasis{2}`
 
 # Details
-Tensor product NURBS surfaces and volumes are formed by taking the tensor product of univariate NURBS bases, with weights controlling the influence of each control point.
+Tensor product NURBS surfaces are formed by taking the tensor product of univariate NURBS bases, with weights controlling the influence of each control point.
 
 # Examples
 ```julia
-kv1 = gsKnotVector(...)
-kv2 = gsKnotVector(...)
-w = [1.0 1.0 1.0; 1.0 sqrt(2)/2 1.0; 1.0 1.0 1.0]
-basis = TensorNurbsBasis(kv1, kv2, w)
+kv1 = KnotVector([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])   # 3 functions
+kv2 = KnotVector([0.0, 0.0, 1.0, 1.0])             # 2 functions
+w = reshape([1.0, sqrt(2)/2, 1.0, 1.0, sqrt(2)/2, 1.0], 6, 1)
+basis = TensorNurbsBasis{2}(kv1, kv2, w)
 ```
 """
 function TensorNurbsBasis end
@@ -423,6 +451,91 @@ A const array view of the knot values
 """
 function knotContainer end
 
+@doc """
+    multiplicity(knotVector::KnotVector, u::Real)
+
+Get the multiplicity of a single knot value.
+
+# Arguments
+- `knotVector`: The knot vector
+- `u`: The knot value to look up
+
+# Returns
+How many times `u` occurs in the knot vector, or `0` if it is not a knot at all
+
+# Details
+This is the per-value counterpart of [`multiplicities`](@ref), which returns the multiplicity
+of every unique knot at once. A knot of multiplicity `m` in a degree-`p` basis leaves the
+spline `C^(p-m)` continuous there.
+
+# Examples
+```julia
+kv = KnotVector([0.0, 0.0, 0.0, 0.25, 0.5, 0.5, 1.0, 1.0, 1.0])
+multiplicity(kv, 0.5)   # 2
+multiplicity(kv, 0.3)   # 0 -- not a knot
+```
+"""
+function multiplicity end
+
+@doc """
+    greville!(knotVector::KnotVector, out::gsMatrix{Float64})
+
+Compute all Greville abscissae of the knot vector (in-place).
+
+# Arguments
+- `knotVector`: The knot vector
+- `out`: Output `gsMatrix{Float64}`, filled with a `1 × n` row of abscissae, one per basis
+  function (modified in-place)
+
+# Details
+The `i`-th Greville abscissa is the average of the `p` knots following knot `i`, for degree
+`p`. They are the canonical interpolation sites of a spline space: a control point placed at
+its Greville abscissa gives a curve that stays close to the control polygon, which makes them
+the usual choice for control-point-based interpolation and for plotting a control net against
+the parameter axis.
+
+# Examples
+```julia
+kv = KnotVector([0.0, 0.0, 0.0, 0.25, 0.5, 0.5, 1.0, 1.0, 1.0])
+out = gsMatrix()
+greville!(kv, out)
+toVector(out)   # [0.0, 0.125, 0.375, 0.5, 0.75, 1.0]
+```
+
+# See Also
+- [`greville`](@ref)
+"""
+function greville! end
+
+@doc """
+    greville(knotVector::KnotVector)
+    greville(knotVector::KnotVector, i::Int)
+
+Get the Greville abscissae of the knot vector.
+
+Without an index, returns all of them as a `1 × n` [`gsMatrix`](@ref) — read it with
+[`toVector`](@ref). With an index, returns that single abscissa as a `Float64`, 1-based.
+
+# Arguments
+- `knotVector`: The knot vector
+- `i`: The index of a single abscissa (1-based)
+
+# Returns
+A `gsMatrix` of all abscissae, or a single `Float64`
+
+# Examples
+```julia
+kv = KnotVector([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+toVector(greville(kv))   # [0.0, 0.25, 0.75, 1.0]
+greville(kv, 2)          # 0.25
+```
+
+# See Also
+- [`greville!`](@ref) for the in-place variant
+"""
+function greville end
+
+
 # degree already documented above
 function degree end
 
@@ -466,7 +579,13 @@ Get the knot spans in the support of the `j`-th basis function.
 - `j`: The basis function index (1-indexed)
 
 # Returns
-The element indices where the basis function has nonzero support
+A `gsMatrix{Float64}` holding the lower and upper corner of *one* element contained in the
+support of basis function `j` — the coordinates of an element, not a list of element indices,
+and not the whole support.
+
+# See Also
+- [`knotSpans`](@ref) to iterate over every element of the mesh
+- [`isActive`](@ref) to test a single function at a single point
 """
 function elementInSupportOf end
 
@@ -501,14 +620,16 @@ Boolean indicating whether the basis function is active at the point
 function isActive end
 
 @doc """
-    degreeElevate!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
+    degreeElevate!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=0)
 
 Elevate the polynomial degree of a basis or geometry.
 
 # Arguments
 - `obj`: A basis or geometry object (modified in-place)
 - `i`: The amount to elevate degree by (default: 1)
-- `dir`: The direction for tensor product bases (default: -1 for all directions)
+- `dir`: The parametric direction, 1-based, or `0` for all directions (default: `0`)
+
+Directions outside `0:parDim(obj)` are rejected with an error.
 
 # Note
 This operation modifies the object in-place.
@@ -516,14 +637,16 @@ This operation modifies the object in-place.
 function degreeElevate! end
 
 @doc """
-    degreeReduce!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
+    degreeReduce!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=0)
 
 Reduce the polynomial degree of a basis or geometry.
 
 # Arguments
 - `obj`: A basis or geometry object (modified in-place)
 - `i`: The amount to reduce degree by (default: 1)
-- `dir`: The direction for tensor product bases (default: -1 for all directions)
+- `dir`: The parametric direction, 1-based, or `0` for all directions (default: `0`)
+
+Directions outside `0:parDim(obj)` are rejected with an error.
 
 # Note
 This operation modifies the object in-place.
@@ -531,14 +654,16 @@ This operation modifies the object in-place.
 function degreeReduce! end
 
 @doc """
-    degreeIncrease!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
+    degreeIncrease!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=0)
 
 Increase the polynomial degree of a basis or geometry.
 
 # Arguments
 - `obj`: A basis or geometry object (modified in-place)
 - `i`: The amount to increase degree by (default: 1)
-- `dir`: The direction for tensor product bases (default: -1 for all directions)
+- `dir`: The parametric direction, 1-based, or `0` for all directions (default: `0`)
+
+Directions outside `0:parDim(obj)` are rejected with an error.
 
 # Note
 This operation modifies the object in-place.
@@ -546,14 +671,16 @@ This operation modifies the object in-place.
 function degreeIncrease! end
 
 @doc """
-    degreeDecrease!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=-1)
+    degreeDecrease!(obj::Union{gsBasis, gsGeometry}, i::Int=1, dir::Int=0)
 
 Decrease the polynomial degree of a basis or geometry.
 
 # Arguments
 - `obj`: A basis or geometry object (modified in-place)
 - `i`: The amount to decrease degree by (default: 1)
-- `dir`: The direction for tensor product bases (default: -1 for all directions)
+- `dir`: The parametric direction, 1-based, or `0` for all directions (default: `0`)
+
+Directions outside `0:parDim(obj)` are rejected with an error.
 
 # Note
 This operation modifies the object in-place.
@@ -561,14 +688,14 @@ This operation modifies the object in-place.
 function degreeDecrease! end
 
 @doc """
-    elevateContinuity!(basis::gsBasis, i::Int=1, dir::Int=-1)
+    elevateContinuity!(basis::gsBasis, i::Int=1, dir::Int=0)
 
 Elevate the continuity of the basis.
 
 # Arguments
 - `basis`: The basis (modified in-place)
 - `i`: The number of continuity levels to increase (default: 1)
-- `dir`: The direction for tensor product bases (default: -1 for all directions)
+- `dir`: The parametric direction, 1-based, or `0` (equivalently `-1`) for all directions (default: `0`)
 
 # Details
 Elevates continuity by increasing the polynomial degree and adjusting knot multiplicities.
@@ -579,14 +706,14 @@ This operation modifies the basis in-place.
 function elevateContinuity! end
 
 @doc """
-    reduceContinuity!(basis::gsBasis, i::Int=1, dir::Int=-1)
+    reduceContinuity!(basis::gsBasis, i::Int=1, dir::Int=0)
 
 Reduce the continuity of the basis.
 
 # Arguments
 - `basis`: The basis (modified in-place)
 - `i`: The number of continuity levels to decrease (default: 1)
-- `dir`: The direction for tensor product bases (default: -1 for all directions)
+- `dir`: The parametric direction, 1-based, or `0` (equivalently `-1`) for all directions (default: `0`)
 
 # Note
 This operation modifies the basis in-place.
@@ -623,12 +750,21 @@ function setDegreePreservingMultiplicity! end
 
 @doc """
     boundary(basis::gsBasis, s::Int)
+    boundary(geo::gsGeometry, s::Int)
 
-Returns the indices of the basis functions that are nonzero at the domain boundary as single-column-matrix.
+Extract a side of the domain.
 
-# Arguments: 
-- `basis`: The basis
-- `s`: The boxSide describing the side. 
+For a **basis**, returns the indices of the basis functions that are nonzero on that side, as
+a single-column matrix (read it with [`toVector`](@ref)).
+
+For a **geometry**, returns that side as a geometry of one lower parametric dimension,
+wrapped in a C++ `unique_ptr` to the abstract base class — dereference it with `[]` before
+use, e.g. `west = boundary(geo, 1)[]`.
+
+# Arguments
+- `basis` / `geo`: The basis or geometry
+- `s`: The boxSide describing the side: `1`/`2` are west and east (``u = 0`` and ``u = 1``),
+  `3`/`4` are south and north.
 """
 function boundary end
 
@@ -885,33 +1021,50 @@ function uniformCoarsen! end
 @doc """
     uniformRefine_withCoefs!(basis::gsBasis, coefs::Matrix{Float64}, numKnots::Int=1, mul::Int=1)
 
-Uniformly refine the basis and update control point coefficients accordingly.
+Uniformly refine the basis and compute the matching refined control points.
 
 # Arguments
 - `basis`: The basis (modified in-place)
-- `coefs`: Control point coefficients (modified in-place)
+- `coefs`: Control point coefficients, one row per basis function
 - `numKnots`: Number of knots to insert in each span (default: 1)
 - `mul`: Multiplicity of each inserted knot (default: 1)
 
-# Details
-This function refines the basis and automatically computes the new control points such that the refined basis represents the same geometry/function.
+# Returns
+A `gsMatrix` of refined coefficients, with one row per function of the refined basis
 
-# Note
-Both the basis and coefficients are modified in-place.
+# Details
+The refined basis together with the returned coefficients represents exactly the same
+function as the original pair did.
+
+The coefficients are **not** updated in place: refinement adds control points, so the result
+has more rows than `coefs`. Only the basis is modified in place, hence the `!`.
+
+`coefs` must have exactly `size(basis)` rows, otherwise an error is raised.
+
+# Examples
+```julia
+basis = BSplineBasis(kv)
+newcoefs = toMatrix(uniformRefine_withCoefs!(basis, coefs))
+refined = BSpline(basis, newcoefs)   # the same curve in a richer space
+```
 """
 function uniformRefine_withCoefs! end
 
 
 @doc raw"""
-    kontSpans(basis::gsBasis)
+    knotSpans(basis::gsBasis)
 
 Returns a list of the Knot Spans, i.e. elements in reference space.
+
+For a tensor product basis the spans tile the parameter domain, ordered with the first
+parametric direction running fastest.
 
 # Common Methods
 - [`centerPoint`](@ref)
 - [`lowerCorner`](@ref)
 - [`upperCorner`](@ref)
 
+Each of these returns a [`gsVector`](@ref) with one entry per parametric direction.
 """
 function knotSpans end
 
@@ -1195,20 +1348,20 @@ function parDim end
 # TensorBSpline methods
 
 @doc """
-    TensorBSpline{1}(basis::TensorBSplineBasis{1}, coefs::Union{Vector{Float64}, Matrix{Float64}})
+    TensorBSpline{1}(basis::BSplineBasis{1}, coefs::Union{Vector{Float64}, Matrix{Float64}})
     TensorBSpline{2}(basis::TensorBSplineBasis{2}, coefs::Matrix{Float64})
-    TensorBSpline{2}(kv1::KnotVector, kv2::KnotVector, coefs::Matrix{Float64})
-    TensorBSpline{2}(corner::Matrix{Float64}, kv1::KnotVector, kv2::KnotVector)
     TensorBSpline{3}(basis::TensorBSplineBasis{3}, coefs::Matrix{Float64})
-    TensorBSpline{3}(kv1::KnotVector, kv2::KnotVector, kv3::KnotVector, coefs::Matrix{Float64})
+    TensorBSpline{N}(corner::Matrix{Float64}, kv1::KnotVector, kv2::KnotVector)
 
-Construct a tensor product B-spline surface or volume from a basis and control points.
+Construct a tensor product B-spline surface or volume.
 
 # Arguments
 - `basis`: The tensor product B-spline basis
-- `coefs`: Control point coefficients (matrix)
-- `kv1`, `kv2`, `[kv3]`: Knot vectors for each parametric direction
-- `corner`: Corner points (for constructing bilinear patches)
+- `coefs`: Control point coefficients — one row per control point, one column per physical
+  coordinate, ordered lexicographically with the first parametric direction running fastest
+- `corner`: A `4 × 3` matrix of three-dimensional corner points listed **counterclockwise**
+  around the patch; the result is a surface with `targetDim == 3`
+- `kv1`, `kv2`: Knot vectors for each parametric direction
 
 # Returns
 A TensorBSpline object (surface or volume)
@@ -1220,19 +1373,22 @@ All methods from `gsGeometry` are available for TensorBSpline objects.
 
 # Examples
 ```julia
-kv1 = KnotVector([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
-kv2 = KnotVector([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
-coefs = [0.0 1.0 2.0; 0.0 0.0 0.0; 0.0 1.0 2.0; 0.0 0.0 0.0; ...]
+kv1 = KnotVector([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])   # 3 functions
+kv2 = KnotVector([0.0, 0.0, 1.0, 1.0])             # 2 functions
+coefs = [0.0 0.0; 0.5 0.4; 1.0 0.0; 0.0 1.0; 0.5 1.4; 1.0 1.0]
 basis = TensorBSplineBasis{2}(kv1, kv2)
 surface = TensorBSpline{2}(basis, coefs)
 ```
+
+# Note
+There are further overloads taking the knot vectors directly, such as
+`TensorBSpline{2}(kv1, kv2, coefs)`; those expect `coefs` as a [`gsMatrix`](@ref), which you
+fill with [`TinyGismo.setValue!`](@ref). The `(basis, coefs)` form is usually easier, since
+it accepts a plain Julia matrix.
 """
 function TensorBSpline end
 
 # knots already documented above
-
-# insertKnot already documented above
-function insertKnot end
 
 # uniformRefine! already documented above
 function uniformRefine! end
@@ -1266,16 +1422,16 @@ A Nurbs object
 # Details
 A NURBS (Non-Uniform Rational B-Spline) curve or surface is defined by a NURBS basis (which includes weights) and control points. The rational nature allows exact representation of conic sections and provides local control through weights.
 
-All methods from `gsGeometry` are available for Nurbs objects.
-
 # Examples
 ```julia
 kv = KnotVector([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
 weights = [1.0, sqrt(2)/2, 1.0]
 basis = NurbsBasis(kv, weights)
-coefs = [0.0, 1.0, 1.0, 1.0, 0.0, 1.0]
+coefs = [1.0 0.0; 1.0 1.0; 0.0 1.0]
 curve = Nurbs(basis, coefs)
 ```
+
+All methods from `gsGeometry` are available for Nurbs objects.
 """
 function Nurbs end
 
@@ -1314,9 +1470,6 @@ function insertKnot! end
 # uniformRefine! already documented above
 function uniformRefine! end
 
-# uniformCoarsen already documented above for gsBasis
-function uniformCoarsen end
-
 # degree already documented above
 function degree end
 
@@ -1333,16 +1486,14 @@ function coefAtCorner end
 
 @doc """
     TensorNurbs{2}(basis::TensorNurbsBasis{2}, coefs::Matrix{Float64})
-    TensorNurbs{2}(kv1::KnotVector, kv2::KnotVector, coefs::Matrix{Float64})
     TensorNurbs{3}(basis::TensorNurbsBasis{3}, coefs::Matrix{Float64})
-    TensorNurbs{3}(kv1::KnotVector, kv2::KnotVector, kv3::KnotVector, coefs::Matrix{Float64})
 
 Construct a tensor product NURBS surface or volume from a basis and control points.
 
 # Arguments
 - `basis`: The tensor product NURBS basis
-- `coefs`: Control point coefficients (matrix)
-- `kv1`, `kv2`, `[kv3]`: Knot vectors for each parametric direction
+- `coefs`: Control point coefficients — one row per control point, one column per physical
+  coordinate, ordered lexicographically with the first parametric direction running fastest
 
 # Returns
 A TensorNurbs object (surface or volume)
@@ -1350,17 +1501,22 @@ A TensorNurbs object (surface or volume)
 # Details
 Tensor product NURBS surfaces and volumes are formed by taking the tensor product of univariate NURBS bases. They combine the flexibility of tensor products with the rational properties of NURBS, enabling exact representation of complex shapes including quadric surfaces.
 
-All methods from `gsGeometry` are available for TensorNurbs objects.
+All methods from `gsGeometry` are available for TensorNurbs objects — unlike the univariate
+[`Nurbs`](@ref).
 
 # Examples
 ```julia
-kv1 = KnotVector([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
-kv2 = KnotVector([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
-weights = [1.0 sqrt(2)/2 1.0; 1.0 sqrt(2)/2 1.0; 1.0 sqrt(2)/2 1.0]
+kv1 = KnotVector([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])   # 3 functions
+kv2 = KnotVector([0.0, 0.0, 1.0, 1.0])             # 2 functions
+weights = reshape([1.0, sqrt(2)/2, 1.0, 1.0, sqrt(2)/2, 1.0], 6, 1)
 basis = TensorNurbsBasis{2}(kv1, kv2, weights)
-coefs = [0.0 1.0 1.0; 0.0 0.0 1.0; ...]
+coefs = [1.0 0.0; 2.0 0.0; 1.0 1.0; 2.0 2.0; 0.0 1.0; 0.0 2.0]
 surface = TensorNurbs{2}(basis, coefs)
 ```
+
+# Note
+As for [`TensorBSpline`](@ref), the overloads taking knot vectors directly expect `coefs` as
+a [`gsMatrix`](@ref); the `(basis, coefs)` form accepts a plain Julia matrix.
 """
 function TensorNurbs end
 
@@ -1368,12 +1524,6 @@ function TensorNurbs end
 
 # weights already documented above
 function weights end
-
-# insertKnot already documented above
-function insertKnot end
-
-# uniformRefine already documented above
-function uniformRefine end
 
 # uniformCoarsen! already documented above
 function uniformCoarsen! end
@@ -1404,6 +1554,10 @@ A gsMatrix object
 
 # Details
 gsMatrix is a parametric type used throughout Gismo for matrix operations. It's commonly used as output parameters in bang methods (methods ending with `!`).
+
+Elements are read with [`TinyGismo.value`](@ref) or `m[i, j]` and written with
+[`TinyGismo.setValue!`](@ref), so a `gsMatrix` can be filled directly as well as by being
+passed to a bang method.
 
 # Examples
 ```julia
@@ -1526,26 +1680,86 @@ RuntimeError if indices are out of bounds
 """
 function value end
 
+@doc """
+    setValue!(matrix::gsMatrix, i::Int, j::Int, value)
+    setValue!(vector::gsVector, i::Int, value)
+
+Write a single element of a gsMatrix or gsVector, with bounds checking.
+
+# Arguments
+- `matrix`/`vector`: The gsMatrix or gsVector (modified in-place)
+- `i`: Row/element index (1-indexed)
+- `j`: Column index (for matrices only, 1-indexed)
+- `value`: The value to store
+
+# Details
+Together with the sized constructor this lets you build a `gsMatrix` yourself, which is what
+the constructors taking a `gsMatrix` of coefficients need:
+
+```julia
+cm = gsMatrix(6, 2)
+for j in 1:2, i in 1:6
+    setValue!(cm, i, j, coefs[i, j])
+end
+surface = TensorBSpline{2}(kv1, kv2, cm)
+```
+
+# Throws
+RuntimeError if indices are out of bounds
+"""
+function setValue! end
+
 # Knot Spans
+
+@doc """
+    KnotSpan
+
+A single element of the parametric mesh — one knot span of a basis, i.e. one box in the
+parameter domain on which the basis is a polynomial.
+
+`KnotSpan` objects are not constructed directly; they are obtained from
+[`knotSpans`](@ref), which returns one per element of a basis.
+
+# Common Methods
+- [`lowerCorner`](@ref)
+- [`upperCorner`](@ref)
+- [`centerPoint`](@ref)
+
+Each returns a [`gsVector`](@ref) with one entry per parametric direction, so a knot span of
+a univariate basis is described by one-element vectors and a knot span of a surface basis by
+two-element vectors.
+
+# Examples
+```julia
+basis = BSplineBasis(KnotVector([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0]))
+for span in knotSpans(basis)
+    lo, up = toVector(lowerCorner(span)), toVector(upperCorner(span))
+end
+```
+"""
+KnotSpan
 
 @doc """
     centerPoint(knotSpan::KnotSpan)
 
-returns the center point of a knot span in parametric coordinates.
+returns the center point of a knot span in parametric coordinates, as a [`gsVector`](@ref)
+with one entry per parametric direction.
 """
 function centerPoint end
 
 @doc """
     lowerCorner(knotSpan::KnotSpan)
 
-returns the lower corner point of a knot span in parametric coordinates.
+returns the lower corner point of a knot span in parametric coordinates, as a
+[`gsVector`](@ref) with one entry per parametric direction.
 """
 function lowerCorner end
 
 @doc """
     upperCorner(knotSpan::KnotSpan)
 
-returns the upper corner point of a knot span in parametric coordinates.
+returns the upper corner point of a knot span in parametric coordinates, as a
+[`gsVector`](@ref) with one entry per parametric direction.
 """
 function upperCorner end
 
@@ -1561,21 +1775,21 @@ Create a B-spline basis on the unit interval [0, 1].
 - `deg`: Polynomial degree of the basis
 
 # Returns
-A BSplineBasis of degree `deg` defined on the parametric domain [0, 1]
+A [`BSpline`](@ref) geometry of degree `deg` mapping the parametric domain [0, 1] onto the
+interval [0, 1] — that is, the identity curve, with `parDim == targetDim == 1`
 
 # Details
-This is a convenience function for creating a standard univariate B-spline basis on the unit interval with clamped knot vector.
+This is a convenience function for the standard univariate spline space on the unit interval
+with a clamped knot vector. Use [`TinyGismo.basis`](@ref) on the result to get the
+corresponding [`BSplineBasis`](@ref).
 
 # Examples
 ```julia
-# Linear B-spline basis on [0, 1]
-basis_linear = createBSplineUnitInterval(1)
+# Quadratic identity curve on [0, 1]
+curve = createBSplineUnitInterval(2)
 
-# Quadratic B-spline basis on [0, 1]
-basis_quad = createBSplineUnitInterval(2)
-
-# Cubic B-spline basis on [0, 1]
-basis_cubic = createBSplineUnitInterval(3)
+# ... and its basis
+b = TinyGismo.basis(curve)
 ```
 """
 function createBSplineUnitInterval end
@@ -1600,8 +1814,8 @@ A TensorBSpline{2} representing a rectangular patch
 # Unit square
 rect = createBSplineRectangle()
 
-# Custom rectangle
-rect = createBSplineRectangle(low_x=-1, low_y=-1, upp_x=2, upp_y=3)
+# Custom rectangle -- arguments are positional; keyword arguments are not supported
+rect = createBSplineRectangle(-1, -1, 2, 3)
 ```
 """
 function createBSplineRectangle end
@@ -1633,8 +1847,8 @@ A TensorBSpline{2} representing a trapezoidal patch
 
 # Examples
 ```julia
-# Parameter version
-trap = createBSplineTrapezium(Lbot=2, Ltop=1, H=1.5)
+# Parameter version -- arguments are positional; keyword arguments are not supported
+trap = createBSplineTrapezium(2, 1, 1.5)
 
 # Corner points version
 trap = createBSplineTrapezium(0, 0, 2, 0, 1.5, 1, 0.5, 1)
@@ -1880,7 +2094,8 @@ Create a NURBS sphere.
 - `z`: Center z-coordinate (default: 0)
 
 # Returns
-A TensorNurbs{3} representing a sphere
+A `TensorNurbs{2}` representing a sphere — a *surface*, so `parDim == 2` and
+`targetDim == 3`
 """
 function createNurbsSphere end
 
@@ -1910,7 +2125,8 @@ Create a B-spline circle patch (disk).
 - `y`: Center y-coordinate (default: 0)
 
 # Returns
-A TensorBSpline{2} representing a fat circle (disk-like patch)
+A [`BSpline`](@ref) *curve* in the plane (`parDim == 1`, `targetDim == 2`) approximating a
+circle. For the filled disk as a surface, see [`createBSplineFatDisk`](@ref).
 """
 function createBSplineFatCircle end
 
@@ -2014,7 +2230,7 @@ Create a B-spline line segment.
 - `u1`: End parameter (default: 1)
 
 # Returns
-A Nurbs curve representing a line segment
+A [`BSpline`](@ref) curve representing a line segment, with `parDim == targetDim == 1`
 
 # Details
 Creates a simple parametric line segment that can be used as a basis for other constructions.

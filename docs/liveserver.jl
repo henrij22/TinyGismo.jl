@@ -1,5 +1,8 @@
 #!/usr/bin/env julia
 
+# Note, Revise.jl and LiveServer.jl do not come with this environment.
+# It is advised to install them in the global environment
+
 using Revise
 # Root of the repository
 const repo_root = dirname(@__DIR__)
