@@ -38,10 +38,14 @@ element count:
 Direction-dependent queries take a 1-based direction index:
 
 ```@example tensor
-(
-    degrees   = (degree(tb, 1), degree(tb, 2)),
-    elements  = (Int(numElements(tb, 1)), Int(numElements(tb, 2))),
-)
+(degree(tb, 1), degree(tb, 2))
+```
+
+Element counts are the exception: the second argument of [`numElements`](@ref) is a **box
+side**, not a direction. For per-direction counts go through the univariate component:
+
+```@example tensor
+(Int(numElements(component(tb, 1))), Int(numElements(component(tb, 2))))
 ```
 
 [`TinyGismo.knots`](@ref) and [`TinyGismo.component`](@ref) reach into a single direction —
@@ -215,13 +219,21 @@ a volume, despite the name:
 
 ```@example tensor
 sphere = createNurbsSphere(1.0)
-sb = basis(sphere)
 (
     parDim    = parDim(sphere),
     targetDim = targetDim(sphere),
     degrees   = (degree(sphere, 1), degree(sphere, 2)),
-    elements  = (Int(numElements(sb, 1)), Int(numElements(sb, 2))),
 )
+```
+
+Its mesh is anisotropic — two elements around one direction, four around the other.
+[`TinyGismo.component`](@ref) is only available on B-spline bases, so on a *rational* basis
+count the spans in each knot vector instead:
+
+```@example tensor
+sb = basis(sphere)
+elements(b, i) = length(unique(knotContainer(knots(b, i)))) - 1
+(elements(sb, 1), elements(sb, 2)), Int(numElements(sb))
 ```
 
 A NURBS cube, by contrast, is genuinely trivariate:

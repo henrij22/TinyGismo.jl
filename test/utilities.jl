@@ -144,6 +144,26 @@ end
         @test size(TensorNurbsBasis{2}(kv, kv, ones(16, 1))) == 16
     end
 
+    @testset "size(obj, d) follows Base's contract for trailing dimensions" begin
+        # Base returns 1 for d > ndims rather than raising, and generic array code relies
+        # on it: size(A, d) must never be a BoundsError for a valid positive d.
+        m = gsMatrix(4, 3)
+        @test size(m, 1) == 4
+        @test size(m, 2) == 3
+        @test size(m, 3) == 1
+        @test size(m, 7) == 1
+
+        v = gsVector(5)
+        @test size(v, 1) == 5
+        @test size(v, 2) == 1
+        @test size(v, 7) == 1
+
+        @testset "matching what Base does for ordinary arrays" begin
+            @test size(m, 3) == size(zeros(4, 3), 3)
+            @test size(v, 2) == size(zeros(5), 2)
+        end
+    end
+
     @testset "matrices and vectors report dimensions" begin
         # These are array-like -- gsMatrix supports m[i, j] -- so they follow the usual
         # Base.size contract instead, with the total on length.

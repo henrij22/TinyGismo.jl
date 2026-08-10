@@ -132,7 +132,9 @@ so `size(m, 1)` and generic code that walks the axes behave as expected. `gsMatr
 Use `length` for the total number of entries, which is what the C++ `size()` method returns.
 """
 Base.size(matrix::gsMatrix) = (Int(rows(matrix)), Int(cols(matrix)))
-Base.size(matrix::gsMatrix, d::Integer) = Base.size(matrix)[d]
+# `1` for trailing dimensions, as Base does for any array: size(A, d) is not an error
+# for d > ndims(A), and generic code relies on that.
+Base.size(matrix::gsMatrix, d::Integer) = d <= 2 ? Base.size(matrix)[d] : 1
 
 @doc """
     Base.size(vector::gsVector)
@@ -141,7 +143,7 @@ Base.size(matrix::gsMatrix, d::Integer) = Base.size(matrix)[d]
 Get the dimensions of the vector as the one-element tuple `(length,)`.
 """
 Base.size(vector::gsVector) = (Int(rows(vector)),)
-Base.size(vector::gsVector, d::Integer) = Base.size(vector)[d]
+Base.size(vector::gsVector, d::Integer) = d <= 1 ? Base.size(vector)[d] : 1
 
 @doc """
     Base.length(obj::Union{gsMatrix, gsVector})

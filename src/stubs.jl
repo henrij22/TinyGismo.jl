@@ -688,14 +688,13 @@ This operation modifies the object in-place.
 function degreeDecrease! end
 
 @doc """
-    elevateContinuity!(basis::gsBasis, i::Int=1, dir::Int=0)
+    elevateContinuity!(basis::gsBasis, i::Int=1)
 
 Elevate the continuity of the basis.
 
 # Arguments
 - `basis`: The basis (modified in-place)
 - `i`: The number of continuity levels to increase (default: 1)
-- `dir`: The parametric direction, 1-based, or `0` (equivalently `-1`) for all directions (default: `0`)
 
 # Details
 Elevates continuity by increasing the polynomial degree and adjusting knot multiplicities.
@@ -706,14 +705,13 @@ This operation modifies the basis in-place.
 function elevateContinuity! end
 
 @doc """
-    reduceContinuity!(basis::gsBasis, i::Int=1, dir::Int=0)
+    reduceContinuity!(basis::gsBasis, i::Int=1)
 
 Reduce the continuity of the basis.
 
 # Arguments
 - `basis`: The basis (modified in-place)
 - `i`: The number of continuity levels to decrease (default: 1)
-- `dir`: The parametric direction, 1-based, or `0` (equivalently `-1`) for all directions (default: `0`)
 
 # Note
 This operation modifies the basis in-place.
