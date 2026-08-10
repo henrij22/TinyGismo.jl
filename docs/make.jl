@@ -1,4 +1,4 @@
-using Documenter, TinyGismo
+using Documenter, DocumenterCodeBlocks, TinyGismo
 
 const liveserver = "liveserver" in ARGS
 const is_ci = haskey(ENV, "GITHUB_ACTIONS")
@@ -8,17 +8,27 @@ if liveserver
     Revise.revise()
 end
 
+DocMeta.setdocmeta!(TinyGismo, :DocTestSetup, :(using TinyGismo); recursive = true)
+
 makedocs(;
     format = Documenter.HTML(;
         canonical = "https://github.com/henrij22/TinyGismo.jl/stable",
         collapselevel = 1
     ),
     repo = Documenter.Remotes.GitHub("henrij22", "TinyGismo.jl"),
+    plugins = [CodeBlocks()],
     modules = [TinyGismo],
     sitename = "TinyGismo documentation",
     warnonly = true, checkdocs = :none,
     pages = [
-        "index.md",
+        "Home" => "index.md",
+        "Examples" => [
+            "Examples overview" => "02_examples/00_index.md",
+            "02_examples/01_geometries.md",
+            "02_examples/02_tensor_bsplines.md",
+            "02_examples/03_refinement.md",
+            "02_examples/04_evaluation.md",
+        ],
         "API Reference" => [
             "Reference overview" => "01_api_reference/00_index.md",
             "01_api_reference/01_knotvector.md",

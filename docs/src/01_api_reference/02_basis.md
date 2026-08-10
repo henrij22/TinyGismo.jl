@@ -105,7 +105,6 @@ TinyGismo.component
 
 ```@docs
 numActive
-numActive!
 ```
 
 ### Refinement Operations

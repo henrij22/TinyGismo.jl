@@ -5,6 +5,7 @@ Utility types and functions for working with Gismo objects.
 ## Knot Span
 
 ```@docs
+TinyGismo.KnotSpan
 centerPoint
 lowerCorner
 upperCorner
@@ -24,9 +25,12 @@ gsVector
 ### Size and Dimension Queries
 
 ```@docs
-TinyGismo.size
+Base.size(::TinyGismo.gsMatrix)
+Base.size(::TinyGismo.gsVector)
+Base.length(::TinyGismo.gsMatrix)
 TinyGismo.rows
 TinyGismo.cols
+TinyGismo.size
 ```
 
 ### Conversion Functions
@@ -42,4 +46,5 @@ TinyGismo.toValue
 ```@docs
 TinyGismo.value
 TinyGismo._value
+TinyGismo.setValue!
 ```

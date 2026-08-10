@@ -119,6 +119,42 @@ Alias for the C++ `size()` method.
 """
 Base.size(basis::TensorNurbsBasis) = size(basis)
 
+@doc """
+    Base.size(matrix::gsMatrix)
+    Base.size(matrix::gsMatrix, d::Integer)
+
+Get the dimensions of the matrix as a `(rows, cols)` tuple.
+
+Unlike the counts above this follows the usual `Base.size` contract for array-like objects,
+so `size(m, 1)` and generic code that walks the axes behave as expected. `gsMatrix` supports
+`m[i, j]`, which makes a dimension tuple the far less surprising choice here.
+
+Use `length` for the total number of entries, which is what the C++ `size()` method returns.
+"""
+Base.size(matrix::gsMatrix) = (Int(rows(matrix)), Int(cols(matrix)))
+# `1` for trailing dimensions, as Base does for any array: size(A, d) is not an error
+# for d > ndims(A), and generic code relies on that.
+Base.size(matrix::gsMatrix, d::Integer) = d <= 2 ? Base.size(matrix)[d] : 1
+
+@doc """
+    Base.size(vector::gsVector)
+    Base.size(vector::gsVector, d::Integer)
+
+Get the dimensions of the vector as the one-element tuple `(length,)`.
+"""
+Base.size(vector::gsVector) = (Int(rows(vector)),)
+Base.size(vector::gsVector, d::Integer) = d <= 1 ? Base.size(vector)[d] : 1
+
+@doc """
+    Base.length(obj::Union{gsMatrix, gsVector})
+
+Get the total number of entries — `rows * cols` for a matrix.
+
+This is the value the underlying C++ `size()` method returns.
+"""
+Base.length(matrix::gsMatrix) = Int(TinyGismo.size(matrix))
+Base.length(vector::gsVector) = Int(TinyGismo.size(vector))
+
 # Default Constructors
 @doc """
     BSplineBasis(args...)

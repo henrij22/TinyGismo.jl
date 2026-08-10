@@ -27,7 +27,6 @@ These query functions are also available for basis functions. See the [Basis Fun
 
 ```@docs
 TinyGismo.basis
-TinyGismo.boundary
 numCoefs
 coefAtCorner
 ```

@@ -30,3 +30,5 @@ Manifest.toml
 
 matrix/
 .vscode
+# Local JLL overrides used when testing against a locally built libjltinygismo
+LocalPreferences.toml
