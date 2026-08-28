@@ -129,3 +129,66 @@ TensorNurbsBasis
 ```@docs
 TinyGismo.weights
 ```
+
+## Hierarchical Bases
+
+Hierarchical bases add *local* refinement: a tensor basis is taken as the coarsest level, and
+finer levels are introduced only over the regions that need them. Two flavours are available and
+differ only in truncation.
+
+| | Partition of unity after refinement | Use |
+|---|---|---|
+| [`THBSplineBasis`](@ref) | yes | the usual choice |
+| [`HBSplineBasis`](@ref) | no | when the untruncated functions are wanted |
+
+In G+Smo these are one class template with truncation switched on or off, so everything below
+applies equally to both.
+
+### Constructors
+
+```@docs
+THBSplineBasis
+HBSplineBasis
+```
+
+### Level Queries
+
+```@docs
+numLevels
+levelOf
+tensorLevel
+getLevelAtPoint
+levelAtCorner
+treeSize
+```
+
+### Elements
+
+```@docs
+elementBoxes
+```
+
+### Local Refinement
+
+Refinement is addressed either by parametric coordinates ([`refine!`](@ref)) or by naming exact
+elements ([`refineElements!`](@ref)). The latter goes through [`RefinementBox`](@ref), which is
+also where the level and index conventions are spelled out.
+
+```@docs
+RefinementBox
+refine!
+unrefine!
+refineElements!
+unrefineElements!
+refineElements_withCoefs!
+unrefineElements_withCoefs!
+refine_withCoefs!
+refineSide!
+refineBasisFunction!
+increaseMultiplicity!
+```
+
+Evaluation, derivatives and the degree operations are inherited unchanged from
+[`gsBasis`](@ref TinyGismo.gsBasis) — see [Generic Basis Operations](02_basis.md#Generic-Basis-Operations).
+[`knotSpans`](@ref) is the one exception: it is not available for hierarchical bases, and
+[`elementBoxes`](@ref) replaces it.

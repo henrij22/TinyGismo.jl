@@ -28,6 +28,7 @@ makedocs(;
             "02_examples/02_tensor_bsplines.md",
             "02_examples/03_refinement.md",
             "02_examples/04_evaluation.md",
+            "02_examples/05_hierarchical.md",
         ],
         "API Reference" => [
             "Reference overview" => "01_api_reference/00_index.md",
