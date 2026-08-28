@@ -18,6 +18,8 @@ end
 # Basis types and geometry types exposed by the module
 export BSplineBasis, BSpline, TensorBSplineBasis, TensorBSpline, KnotVector
 export NurbsBasis, TensorNurbsBasis, Nurbs, TensorNurbs
+export THBSplineBasis, HBSplineBasis, THBSpline, HBSpline
+export RefinementBox
 
 # Basis/Geometry Modification
 # Degree and continuity operations (in-place)
@@ -29,6 +31,11 @@ export reverse!
 # Refinement operations (in-place)
 export insertKnot!, insertKnots!, removeKnot!
 export uniformRefine!, uniformCoarsen!, uniformRefine_withCoefs!
+
+# Local (hierarchical) refinement
+export refine!, unrefine!, refineElements!, unrefineElements!
+export refineElements_withCoefs!, unrefineElements_withCoefs!, refine_withCoefs!
+export refineSide!, refineBasisFunction!, increaseMultiplicity!
 
 # Boundary extraction
 export boundary
@@ -48,6 +55,8 @@ export derivFunc, deriv2Func
 # Queries
 ## Basis/knot vector queries
 export numElements, numTotalElements
+export numLevels, treeSize, levelOf, tensorLevel, getLevelAtPoint, levelAtCorner
+export elementBoxes
 export multiplicities, uSize, knotContainer
 export elementIndex, elementInSupportOf, active!, isActive
 export numActive, numActive!
@@ -55,6 +64,7 @@ export numActive, numActive!
 ## Geometry queries
 export numCoefs, coefs, coefsSize, coefAtCorner
 export closestPointTo
+export convertToBSpline
 export targetDim, coefDim, geoDim, parDim
 
 # Matrix/Vector utilities
@@ -118,6 +128,24 @@ Get the number of basis functions in the tensor product NURBS basis.
 Alias for the C++ `size()` method.
 """
 Base.size(basis::TensorNurbsBasis) = size(basis)
+
+@doc """
+    Base.size(basis::THBSplineBasis)
+
+Get the number of basis functions in the truncated hierarchical B-spline basis.
+
+Alias for the C++ `size()` method.
+"""
+Base.size(basis::THBSplineBasis) = size(basis)
+
+@doc """
+    Base.size(basis::HBSplineBasis)
+
+Get the number of basis functions in the hierarchical B-spline basis.
+
+Alias for the C++ `size()` method.
+"""
+Base.size(basis::HBSplineBasis) = size(basis)
 
 @doc """
     Base.size(matrix::gsMatrix)
@@ -195,6 +223,9 @@ gsVector(args...) = gsVector{Float64}(args...)
 
 Base.IndexStyle(::gsMatrix) = IndexLinear()
 Base.getindex(v::gsMatrix, i::Int, j::Int) = TinyGismo.value(v, i, j)
+
+# Hierarchical refinement boxes
+include("hbox.jl")
 
 # Documentation
 include("stubs.jl")

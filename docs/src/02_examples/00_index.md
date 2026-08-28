@@ -11,6 +11,8 @@ the printed results are the values TinyGismo actually returns.
   what each of them does to the control net.
 - [Evaluation](04_evaluation.md) — coefficients, basis function values, active functions,
   geometry positions, derivatives and Jacobians.
+- [Hierarchical splines](05_hierarchical.md) — local refinement with HB- and THB-splines,
+  refinement boxes, hierarchical geometries, and what truncation buys you.
 
 ## Conventions used throughout
 

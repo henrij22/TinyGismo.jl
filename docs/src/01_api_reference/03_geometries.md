@@ -197,3 +197,24 @@ coefDim
 geoDim
 parDim
 ```
+
+## Hierarchical Geometries
+
+Geometries spanned by a hierarchical basis, so that they can be refined locally. See
+[Hierarchical Bases](02_basis.md#Hierarchical-Bases) for the bases themselves.
+
+```@docs
+THBSpline
+HBSpline
+convertToBSpline
+```
+
+#### Refinement
+
+Refining a hierarchical geometry carries the control points along, so the geometry is unchanged as
+a map — only its representation gets finer. The box conventions are those of
+[`RefinementBox`](@ref).
+
+- [`refineElements!`](@ref) - Refine over an exactly specified set of elements
+- [`unrefineElements!`](@ref) - Coarsen over an exactly specified set of elements
+- [`uniformRefine!`](@ref) - Uniformly refine the mesh
