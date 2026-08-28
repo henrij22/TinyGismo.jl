@@ -26,7 +26,9 @@ gsVector
 
 ```@docs
 Base.size(::TinyGismo.gsMatrix)
+Base.size(::TinyGismo.gsMatrix, ::Integer)
 Base.size(::TinyGismo.gsVector)
+Base.size(::TinyGismo.gsVector, ::Integer)
 Base.length(::TinyGismo.gsMatrix)
 TinyGismo.rows
 TinyGismo.cols

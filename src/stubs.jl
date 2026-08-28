@@ -2644,9 +2644,10 @@ function levelOf end
 @doc """
     tensorLevel(basis, level::Int)
 
-Get the full tensor B-spline basis underlying one level (1-based) of a hierarchical basis: the
-uniform basis that level would be if the whole domain were refined to it, not the subset of its
-functions the hierarchical basis actually uses.
+Get the full tensor B-spline basis underlying one level (1-based) of a hierarchical basis.
+
+This is the uniform basis that level would be if the whole domain were refined to it, not the
+subset of its functions the hierarchical basis actually uses.
 """
 function tensorLevel end
 

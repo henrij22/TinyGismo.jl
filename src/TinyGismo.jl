@@ -149,7 +149,6 @@ Base.size(basis::HBSplineBasis) = size(basis)
 
 @doc """
     Base.size(matrix::gsMatrix)
-    Base.size(matrix::gsMatrix, d::Integer)
 
 Get the dimensions of the matrix as a `(rows, cols)` tuple.
 
@@ -160,17 +159,30 @@ so `size(m, 1)` and generic code that walks the axes behave as expected. `gsMatr
 Use `length` for the total number of entries, which is what the C++ `size()` method returns.
 """
 Base.size(matrix::gsMatrix) = (Int(rows(matrix)), Int(cols(matrix)))
-# `1` for trailing dimensions, as Base does for any array: size(A, d) is not an error
-# for d > ndims(A), and generic code relies on that.
+
+@doc """
+    Base.size(matrix::gsMatrix, d::Integer)
+
+Get the extent of the matrix along dimension `d`.
+
+Returns `1` for `d > 2`, as `Base` does for any array: `size(A, d)` is not an error beyond
+`ndims(A)`, and generic code relies on that.
+"""
 Base.size(matrix::gsMatrix, d::Integer) = d <= 2 ? Base.size(matrix)[d] : 1
 
 @doc """
     Base.size(vector::gsVector)
-    Base.size(vector::gsVector, d::Integer)
 
 Get the dimensions of the vector as the one-element tuple `(length,)`.
 """
 Base.size(vector::gsVector) = (Int(rows(vector)),)
+
+@doc """
+    Base.size(vector::gsVector, d::Integer)
+
+Get the extent of the vector along dimension `d`, which is its length for `d == 1` and `1`
+beyond, matching `Base`.
+"""
 Base.size(vector::gsVector, d::Integer) = d <= 1 ? Base.size(vector)[d] : 1
 
 @doc """
