@@ -2552,18 +2552,16 @@ function cols end
 
 A truncated hierarchical B-spline (THB-spline) basis over `d` parametric directions, `d ∈ 1:3`.
 
-Built from a tensor B-spline basis, which becomes its coarsest level. Levels are then added
-locally by [`refineElements!`](@ref) or [`refine!`](@ref), so the basis can be fine where it needs
-to be without refining the whole domain.
+Built from a tensor B-spline basis, which becomes its coarsest level; further levels are added
+locally by [`refineElements!`](@ref) or [`refine!`](@ref).
 
-Truncation keeps the basis a partition of unity at every level, which [`HBSplineBasis`](@ref) does
-not; that is the usual reason to prefer it. The two are otherwise interchangeable — in G+Smo they
-are the same class template with truncation switched off.
+Truncation keeps the basis a partition of unity, which [`HBSplineBasis`](@ref) does not — the
+usual reason to prefer it. Otherwise the two are interchangeable.
 
-The two-argument forms refine the basis at construction. The `Matrix` form takes parametric corner
-coordinates, `d × 2k` with each consecutive pair of columns one box; note that it rounds outward,
-its upper corner being inclusive of the cell containing it. The `Vector{Int64}` form takes element
-boxes in the flat layout described under [`RefinementBox`](@ref).
+The two-argument forms refine at construction. The `Matrix` form takes parametric corner
+coordinates, `d × 2k`, each consecutive pair of columns one box; note it rounds outward, its
+upper corner being inclusive of the cell containing it. The `Vector{Int64}` form takes element
+boxes in the flat layout of [`RefinementBox`](@ref).
 
 # Example
 ```julia
@@ -2583,11 +2581,10 @@ THBSplineBasis
 
 A hierarchical B-spline (HB-spline) basis over `d` parametric directions, `d ∈ 1:3`.
 
-Identical to [`THBSplineBasis`](@ref) in construction and refinement, but without truncation: the
-coarse basis functions overlapping a refined region are kept whole rather than being truncated
-against the finer level. The span is the same, but the basis is no longer a partition of unity
-over refined regions, so prefer `THBSplineBasis` unless you specifically want the untruncated
-functions.
+Identical to [`THBSplineBasis`](@ref) in construction and refinement, but without truncation:
+coarse functions overlapping a refined region are kept whole. The span is the same, but the basis
+is no longer a partition of unity there, so prefer `THBSplineBasis` unless you want the
+untruncated functions.
 """
 HBSplineBasis
 
@@ -2598,11 +2595,10 @@ HBSplineBasis
 A geometry spanned by a truncated hierarchical B-spline basis.
 
 `coefs` has one row per basis function and one column per target coordinate. The second form lifts
-a tensor B-spline geometry unchanged into the hierarchical setting, so that it can then be refined
-locally.
+a tensor B-spline geometry unchanged, so that it can then be refined locally.
 
-Refining a `THBSpline` with [`refineElements!`](@ref) changes its representation but not the map
-it describes: the control points are carried along exactly.
+[`refineElements!`](@ref) changes the representation but not the map: the control points are
+carried along exactly.
 
 See also [`HBSpline`](@ref), [`convertToBSpline`](@ref).
 """
@@ -2622,20 +2618,17 @@ HBSpline
 
 Get the number of levels of a hierarchical basis.
 
-Levels are 1-based, so they run `1:numLevels(basis)`, level `1` being the coarsest. An unrefined
-hierarchical basis has one level and coincides with the tensor basis it was built from.
-
-In G+Smo this count is `maxLevel() + 1`, `maxLevel` being 0-based there.
+Levels run `1:numLevels(basis)`, level `1` being the coarsest; an unrefined basis has one level
+and coincides with the tensor basis it was built from. In G+Smo this count is `maxLevel() + 1`,
+`maxLevel` being 0-based there.
 """
 function numLevels end
 
 @doc """
     treeSize(basis)
 
-Get the number of nodes in the quadtree that records a hierarchical basis' refinement.
-
-A diagnostic on how fragmented the refinement is, not a count of elements — use
-[`numElements`](@ref) for that.
+Get the number of nodes in the quadtree recording a hierarchical basis' refinement — a diagnostic
+on how fragmented it is, not a count of elements (use [`numElements`](@ref) for that).
 """
 function treeSize end
 
@@ -2651,19 +2644,17 @@ function levelOf end
 @doc """
     tensorLevel(basis, level::Int)
 
-Get the full tensor B-spline basis underlying one level of a hierarchical basis.
-
-This is the uniform tensor basis that level would be if the whole domain were refined to it, not
-the subset of its functions that the hierarchical basis actually uses. `level` is 1-based.
+Get the full tensor B-spline basis underlying one level (1-based) of a hierarchical basis: the
+uniform basis that level would be if the whole domain were refined to it, not the subset of its
+functions the hierarchical basis actually uses.
 """
 function tensorLevel end
 
 @doc """
     getLevelAtPoint(basis, u::Vector{Float64})
 
-Get the (1-based) refinement level of the element containing a parametric point.
-
-The most direct way to check that a refinement landed where it was meant to.
+Get the (1-based) refinement level of the element containing a parametric point — the most direct
+way to check that a refinement landed where it was meant to.
 """
 function getLevelAtPoint end
 
@@ -2682,10 +2673,10 @@ Get the elements of a hierarchical basis as a `2d × numElements(basis)` matrix.
 The first `d` rows of each column are one element's lower corner in parametric coordinates, the
 last `d` its upper corner. The elements partition the parameter domain.
 
-This is the hierarchical replacement for [`knotSpans`](@ref), which is not available for
-hierarchical bases: it hands back copies of a G+Smo domain iterator, and `gsHDomainIterator`
-cannot be safely copied upstream — its element cursor points into storage the copy does not own,
-so the copies would read freed memory. Reading the boxes out eagerly avoids the problem entirely.
+This replaces [`knotSpans`](@ref), which is unavailable for hierarchical bases: it hands back
+copies of a G+Smo domain iterator, and `gsHDomainIterator` cannot be safely copied upstream — its
+element cursor points into storage the copy does not own. Reading the boxes out eagerly avoids
+the problem.
 """
 function elementBoxes end
 
@@ -2695,13 +2686,11 @@ function elementBoxes end
 Refine a hierarchical basis over regions given as parametric corner coordinates.
 
 `boxes` is `d × 2k`: each consecutive pair of columns is the lower and upper corner of one box.
-Every box is refined one level deeper than the level it is currently contained in. `refExt`
-widens each box by that many cells before refining, which is a cheap way to keep a refinement
-from hugging a feature too tightly.
+Every box is refined one level deeper than the level containing it. `refExt` widens each box by
+that many cells first, which keeps a refinement from hugging a feature too tightly.
 
-For refining an exactly known set of elements, [`refineElements!`](@ref) is the precise tool.
-
-See also [`unrefine!`](@ref).
+To refine an exactly known set of elements use [`refineElements!`](@ref). See also
+[`unrefine!`](@ref).
 """
 function refine! end
 
@@ -2721,15 +2710,14 @@ function unrefine! end
 Refine a hierarchical basis or geometry over an exactly specified set of elements.
 
 `obj` may be a [`THBSplineBasis`](@ref)/[`HBSplineBasis`](@ref) or a [`THBSpline`](@ref)/
-[`HBSpline`](@ref). On a geometry the control points are carried along, so the geometry is
-unchanged as a map.
+[`HBSpline`](@ref); on a geometry the control points are carried along, leaving the map unchanged.
 
-Each box names the level the region is set **to**, with its corners indexed on that same level's
-grid — see [`RefinementBox`](@ref), which is the readable way to write one. The raw
-`Vector{Int64}` form is the same data flattened, `[level, lower..., upper...]` per box.
+Each box names the level the region is set **to**, corners indexed on that same level's grid —
+see [`RefinementBox`](@ref). The raw `Vector{Int64}` form is the same data flattened,
+`[level, lower..., upper...]` per box.
 
-Refining a basis on its own changes the number of basis functions, so any coefficients you hold
-alongside it become stale; use [`refineElements_withCoefs!`](@ref) to update both together.
+Refining a basis alone changes the number of basis functions, so coefficients held alongside it
+go stale; [`refineElements_withCoefs!`](@ref) updates both together.
 
 # Example
 ```julia
@@ -2746,22 +2734,20 @@ Coarsen a hierarchical basis or geometry over an exactly specified set of elemen
 box forms as [`refineElements!`](@ref).
 
 The level in a box is the level the region is set **to** here as well, so undoing a refinement to
-level `l` means naming level `l-1`, indexed on level `l-1`'s grid. Naming level `l` again asks for
-the state the basis is already in and does nothing.
+level `l` means naming level `l-1`, on level `l-1`'s grid. Naming level `l` again asks for the
+state the basis is already in, and does nothing.
 """
 function unrefineElements! end
 
 @doc """
     refineElements_withCoefs!(basis, coefs::Matrix{Float64}, boxes) -> gsMatrix
 
-Refine a hierarchical basis and return the coefficients that describe the same function over the
-refined basis.
+Refine a hierarchical basis and return the coefficients describing the same function over the
+refined basis — refinement is exact, so the function is unchanged.
 
-The basis is refined in place; the coefficients cannot be, because refinement changes the number
-of basis functions, so the result is a new matrix with a different number of rows. `coefs` must
-have one row per function of the basis *before* refinement, which is checked.
-
-Refinement is exact: the function the coefficients describe is unchanged.
+The basis is refined in place; the coefficients cannot be, since refinement changes the number of
+basis functions, so the result is a new matrix with a different number of rows. `coefs` must have
+one row per function of the basis *before* refinement, which is checked.
 
 See also [`unrefineElements_withCoefs!`](@ref), [`refine_withCoefs!`](@ref).
 """
@@ -2804,10 +2790,8 @@ function refineBasisFunction! end
     increaseMultiplicity!(obj, level::Int, dir::Int, knotValue::Float64, mult::Int = 1)
 
 Raise the multiplicity of a knot on one level of a hierarchical basis or geometry, reducing
-continuity there.
-
-`level` and `dir` are both 1-based; unlike the degree operations, `dir` has no "all directions"
-mode, so `0` is rejected.
+continuity there. `level` and `dir` are both 1-based; `dir` has no "all directions" mode, so `0`
+is rejected.
 """
 function increaseMultiplicity! end
 
@@ -2817,8 +2801,8 @@ function increaseMultiplicity! end
 Refine a hierarchical geometry over its whole domain to its finest level and return the equivalent
 tensor B-spline geometry.
 
-The result describes the same map. It is generally far larger than the hierarchical
-representation — that size difference is the point of hierarchical refinement — so this is for
-export and interoperability rather than for computation.
+The result describes the same map, and is generally far larger than the hierarchical
+representation — that size difference being the point of hierarchical refinement. Meant for
+export and interoperability rather than computation.
 """
 function convertToBSpline end

@@ -1,10 +1,9 @@
 # Element boxes for local refinement of hierarchical bases.
 #
-# The C++ side takes boxes as a flat `Vector{Int64}` of `2d+1` entries each,
-# `[level, lower..., upper...]`, and converts them to the G+Smo convention at the boundary --
-# the same place every other index in these bindings is shifted. `RefinementBox` is the typed
-# form of one such entry; it exists so a box is validated once, reads as a range, and cannot be
-# silently transposed into the wrong layout.
+# The C++ side takes a flat `Vector{Int64}` of `2d+1` entries per box,
+# `[level, lower..., upper...]`, and shifts it to the G+Smo convention at the boundary, as it
+# does every other index. `RefinementBox` is the typed form of one entry, so a box is validated
+# once and cannot be silently transposed into the wrong layout.
 
 """
     RefinementBox(level, lower::NTuple{d,Integer}, upper::NTuple{d,Integer})
@@ -16,9 +15,9 @@ A box of elements on one level of a hierarchical basis, used to refine or unrefi
 and `upper` are 1-based, **inclusive** cell indices *in the index space of that same level*: the
 box covers cells `lower[i]:upper[i]` in direction `i`.
 
-The target level being the one the indices are given on is the part that catches people out. Each
-level halves the cells of the one before it, so a single cell `k` of level `l` is the pair of
-cells `2k-1:2k` on level `l+1`. To refine the first cell of a coarse basis one level deeper:
+The indices being given on the *target* level is the part that catches people out. Each level
+halves the cells of the one before it, so cell `k` of level `l` is cells `2k-1:2k` on level
+`l+1`. To refine the first cell of a coarse basis one level deeper:
 
 ```julia
 refineElements!(basis, RefinementBox(2, 1:2, 1:2))   # coarse cell (1,1), addressed on level 2
@@ -56,8 +55,8 @@ function Base.show(io::IO, box::RefinementBox{d}) where {d}
     return print(io, "RefinementBox($(box.level), $ranges)")
 end
 
-# Flatten to the layout the C++ methods expect. Boxes of differing dimension in one call would
-# produce an array the C++ side cannot segment, so that is rejected here rather than there.
+# Flatten to the layout the C++ methods expect. Mixed dimensions would produce an array the C++
+# side cannot segment, so they are rejected here.
 _flatten(box::RefinementBox) = Int64[box.level, box.lower..., box.upper...]
 
 function _flatten(boxes)
@@ -77,8 +76,8 @@ function _flatten(boxes)
     return flat
 end
 
-# Hierarchical types, truncated and not. The refinement entry points below are identical for
-# both, and for bases and geometries alike.
+# The refinement entry points below are identical for truncated and untruncated, and for bases
+# and geometries alike.
 const HierarchicalBasis = Union{THBSplineBasis, HBSplineBasis}
 const HierarchicalSpline = Union{THBSpline, HBSpline}
 const Hierarchical = Union{HierarchicalBasis, HierarchicalSpline}
