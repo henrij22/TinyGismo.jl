@@ -54,9 +54,9 @@ end
     tb = TensorBSplineBasis{2}(kv, kv)
     b = THBSplineBasis{2}(tb)
 
-    # The level in a box is the level refined *to*, and the corners are indexed on that level's
-    # own grid. Level 2 halves the coarse cells, so the first coarse cell [0,0.25]^2 is cells
-    # 1:2 on level 2. This is the assertion that pins the whole index convention down.
+    # The level in a box is the level refined *to*, with corners indexed on that level's own
+    # grid: level 2 halves the coarse cells, so the first coarse cell [0,0.25]^2 is cells 1:2
+    # there. This pins the whole index convention down.
     refineElements!(b, RefinementBox(2, 1:2, 1:2))
 
     @test numLevels(b) == 2
@@ -69,8 +69,7 @@ end
     # one cell split into four
     @test numElements(b) == numElements(tb) + 3
 
-    # and again at the far corner, which would catch an off-by-one that happened to be
-    # symmetric at the origin
+    # again at the far corner, catching an off-by-one that happened to be symmetric at the origin
     far = THBSplineBasis{2}(tb)
     refineElements!(far, RefinementBox(2, 7:8, 7:8))
     @test getLevelAtPoint(far, [0.875, 0.875]) == 2
@@ -103,9 +102,9 @@ end
     b = THBSplineBasis{2}(tb)
     refineElements!(b, RefinementBox(2, 1:2, 1:2))
     @test numLevels(b) == 2
-    # The level in a box is the level the region is set *to*, for unrefinement as much as for
-    # refinement. Undoing the refinement above therefore names level 1, on level 1's own grid --
-    # naming level 2 again would ask for the state the basis is already in, and do nothing.
+    # The level is the one the region is set *to*, for unrefinement as much as refinement, so
+    # undoing the refinement above names level 1 on level 1's grid. Naming level 2 again would
+    # ask for the state the basis is already in.
     unrefineElements!(b, RefinementBox(1, 1:1, 1:1))
     @test getLevelAtPoint(b, [0.125, 0.125]) == 1
     @test size(b) == size(tb)
@@ -134,8 +133,8 @@ end
     @test size(thb) == size(hb)
     @test numElements(thb) == numElements(hb)
 
-    # ... but only the truncated basis still sums to one over the refined region, which is what
-    # truncation buys. This is what distinguishes the two `Trunc` instantiations.
+    # ... but only the truncated basis still sums to one there, which is what truncation buys --
+    # and what distinguishes the two `Trunc` instantiations.
     inRefined = [0.125, 0.125]
     @test sum(toMatrix(_eval(thb, inRefined))) ≈ 1.0
     @test !(sum(toMatrix(_eval(hb, inRefined))) ≈ 1.0)
@@ -166,12 +165,12 @@ end
     active!(b, u, act)
     @test all(>=(1), toMatrix(act))          # 1-based, like everywhere else
     @test all(<=(size(b)), toMatrix(act))
-    # gsBasis::isActive has no implementation for hierarchical bases upstream; it raises rather
-    # than returning a wrong answer. Read the actives out of active! instead.
+    # gsBasis::isActive has no hierarchical implementation upstream; it raises rather than
+    # answering wrongly. Read the actives out of active! instead.
     @test_throws Exception isActive(b, first(toMatrix(act)), u)
 
-    # knotSpans cannot work here (see elementBoxes) and says so rather than handing back
-    # element handles that read freed memory.
+    # knotSpans cannot work here (see elementBoxes) and says so rather than handing back element
+    # handles that read freed memory.
     @test_throws Exception knotSpans(b)
 
     @test 1 <= levelOf(b, 1) <= numLevels(b)
@@ -219,7 +218,7 @@ end
     # refinement is exact: the function the coefficients describe is unchanged
     @test toMatrix(evalFunc(b, [0.6, 0.6], refined)) ≈ before
 
-    # a coefficient array that does not belong to this basis is rejected rather than read past
+    # a coefficient array not belonging to this basis is rejected rather than read past
     @test_throws Exception refineElements_withCoefs!(b, coefs, box)
 end
 
@@ -231,8 +230,8 @@ end
     @test numLevels(byElements) == 2
     @test getLevelAtPoint(byElements, [0.125, 0.125]) == 2
 
-    # The parametric-coordinate constructor rounds outward: its upper corner is inclusive of the
-    # cell containing it, so a corner sitting on a cell boundary pulls in the next cell too.
+    # The parametric-coordinate constructor rounds outward -- its upper corner is inclusive of
+    # the cell containing it -- so a corner on a cell boundary pulls in the next cell.
     byCoords = THBSplineBasis{2}(tb, [0.0 0.25; 0.0 0.25])
     @test numLevels(byCoords) == 2
     @test getLevelAtPoint(byCoords, [0.125, 0.125]) == 2
@@ -327,7 +326,7 @@ end
     flattened = convertToBSpline(lifted)
     @test flattened isa TensorBSpline
     @test toMatrix(_eval(flattened, [0.4, 0.4])) ≈ toMatrix(_eval(lifted, [0.4, 0.4]))
-    # convertToBSpline carries no bang, so it must leave its argument alone -- upstream
+    # convertToBSpline carries no bang, so it must leave its argument alone; upstream
     # gsTHBSpline::convertToBSpline refines *this, which the binding works around.
     @test numCoefs(lifted) == before
 end

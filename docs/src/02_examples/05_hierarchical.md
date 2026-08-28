@@ -6,10 +6,10 @@ using TinyGismo: basis, degree
 nothing # hide
 ```
 
-Uniform refinement enlarges the space everywhere. That is wasteful when only a small part of the
+Uniform refinement enlarges the space everywhere, which is wasteful when only a small part of the
 domain needs resolving: halving the mesh of a bivariate basis quadruples the number of functions
-no matter how local the feature is. Hierarchical splines refine *locally* — a coarse tensor basis
-is the first level, and finer levels are introduced only over the regions that need them.
+however local the feature is. Hierarchical splines refine *locally* — a coarse tensor basis is
+the first level, and finer levels are added only where they are needed.
 
 TinyGismo exposes two flavours, [`THBSplineBasis`](@ref) (truncated) and
 [`HBSplineBasis`](@ref) (not). They are constructed and refined identically; the difference shows
@@ -38,9 +38,9 @@ elements. [`numLevels`](@ref) counts levels 1-based, so level `1` is the coarses
 > A box names the level the region is set **to**, and its corners are indexed on **that same
 > level's** grid.
 
-Each level halves the cells of the one before it, so a single cell `k` on level `l` is the pair of
-cells `2k-1:2k` on level `l+1`. To take the first coarse cell — the square ``[0, 0.25]^2`` — down
-one level, name level 2 and give its corners on level 2's grid:
+Each level halves the cells of the one before it, so cell `k` on level `l` is cells `2k-1:2k` on
+level `l+1`. To take the first coarse cell — the square ``[0, 0.25]^2`` — down one level, name
+level 2 and give its corners on level 2's grid:
 
 ```@example hier
 refineElements!(thb, RefinementBox(2, 1:2, 1:2))
@@ -103,7 +103,7 @@ lower, upper = boxes[1:2, :], boxes[3:4, :]
 sum(prod(upper .- lower; dims = 1))
 ```
 
-This is the loop an adaptive scheme hangs off: evaluate an error indicator per element, then feed
+This is the loop an adaptive scheme hangs off — evaluate an error indicator per element, then feed
 the worst ones back into `refineElements!`.
 
 ## Hierarchical geometries
@@ -169,10 +169,9 @@ refineElements!(plain, RefinementBox(2, 1:2, 1:2))
 (size(truncated), size(plain))
 ```
 
-The two spaces have the same dimension and span the same functions. But over the refined region
-the coarse functions overlap the fine ones, and only the truncated basis subtracts that overlap
-back out. The consequence is visible in the simplest possible test — whether the basis functions
-sum to one:
+The two spaces have the same dimension and span the same functions, but over the refined region
+the coarse functions overlap the fine ones and only the truncated basis subtracts that overlap
+back out. The simplest possible test shows it — whether the basis functions sum to one:
 
 ```@example hier
 u = [0.125, 0.125]   # inside the refined region
@@ -188,8 +187,8 @@ v = [0.875, 0.875]
 ```
 
 Partition of unity is what makes coefficients behave like control points and keeps the basis
-well-conditioned, so [`THBSplineBasis`](@ref) is the default choice unless you specifically want
-the untruncated functions.
+well-conditioned, so [`THBSplineBasis`](@ref) is the default choice unless you want the
+untruncated functions.
 
 ## Reading and writing
 
