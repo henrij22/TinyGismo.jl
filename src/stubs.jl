@@ -1440,11 +1440,15 @@ function Nurbs end
 
 @doc """
     weight(nurbs::Nurbs, i::Int)
+    weight(basis::Union{NurbsBasis, TensorNurbsBasis}, i::Int)
 
-Get the weight of a specific control point.
+Get the weight of a specific control point, i.e. of basis function `i`.
+
+On a tensor product geometry there is no `weight`; index into [`TinyGismo.weights`](@ref) or
+use the method of its basis instead.
 
 # Arguments
-- `nurbs`: The NURBS curve
+- `nurbs` / `basis`: The NURBS curve or NURBS basis
 - `i`: The control point index (1-indexed)
 
 # Returns
@@ -1453,15 +1457,17 @@ The weight value at control point `i`
 function weight end
 
 @doc """
-    weights(nurbs::Nurbs)
+    weights(nurbs::Union{Nurbs, TensorNurbs})
+    weights(basis::Union{NurbsBasis, TensorNurbsBasis})
 
-Get all control point weights.
+Get all control point weights, one per basis function. A geometry and its
+[`TinyGismo.basis`](@ref) carry the same weights.
 
 # Arguments
-- `nurbs`: The NURBS curve
+- `nurbs` / `basis`: The NURBS geometry or NURBS basis
 
 # Returns
-A vector of all weights
+A single-column [`gsMatrix`](@ref) of all weights; convert it with [`toVector`](@ref)
 """
 function weights end
 
