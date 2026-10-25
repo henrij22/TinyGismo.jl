@@ -86,6 +86,9 @@ end
     eval!(tnb, [0.4, 0.6], values)
     @test sum(toMatrix(values)) ≈ 1.0
 
+    @test toMatrix(TinyGismo.weights(tnb)) ≈ weights
+    @test TinyGismo.weight(tnb, 2) ≈ w
+
     @testset "trivariate" begin
         tnb3 = TensorNurbsBasis{3}(kvu, kvv, kvv, ones(12, 1))
         @test size(tnb3) == 12

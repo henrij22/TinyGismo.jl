@@ -204,11 +204,12 @@ point, sqrt(sum(abs2, point))
 ```
 
 For a univariate [`Nurbs`](@ref), [`TinyGismo.weight`](@ref) reads a single weight; on a
-tensor product geometry, index into the vector returned by `weights` instead:
+tensor product geometry, index into the vector returned by `weights` or ask its basis, which
+carries the same weights:
 
 ```@example tensor
 circle = createNurbsCircle(1.0)
-weight(circle, 2), toVector(weights(annulus))[2]
+weight(circle, 2), toVector(weights(annulus))[2], weight(basis(annulus), 2)
 ```
 
 ## Parametric versus physical dimension

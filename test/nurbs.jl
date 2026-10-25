@@ -38,7 +38,7 @@ end
 end
 
 @testitem "Nurbs: weights" begin
-    using TinyGismo: weights, weight
+    using TinyGismo: weights, weight, basis
 
     circle = createNurbsCircle(1.0)
     w = toVector(weights(circle))
@@ -48,6 +48,11 @@ end
     # the quadratic rational arcs of a circle carry sqrt(2)/2 at the corner points
     @test w[2] ≈ sqrt(2) / 2
     @test all(weight(circle, i) ≈ w[i] for i in eachindex(w))
+
+    # the basis carries the same weights as the geometry
+    b = basis(circle)
+    @test toVector(weights(b)) ≈ w
+    @test all(weight(b, i) ≈ w[i] for i in eachindex(w))
 end
 
 @testitem "Nurbs: unit weights reduce to the B-spline case" begin
