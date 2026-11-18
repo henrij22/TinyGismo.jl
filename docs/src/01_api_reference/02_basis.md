@@ -39,7 +39,7 @@ setDegreePreservingMultiplicity!
 ### Geometric Operations
 
 ```@docs
-TinyGismo.reverse!
+reverse!(::TinyGismo.gsBasis)
 ```
 
 ### Evaluation

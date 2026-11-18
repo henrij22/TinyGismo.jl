@@ -777,7 +777,7 @@ Reverse the basis (flip the parametric direction).
 # Note
 This operation modifies the basis in-place.
 """
-function reverse! end
+reverse!(::gsBasis)
 
 @doc """
     eval!(obj::Union{gsBasis, gsGeometry}, u::Vector{Float64}, out::gsMatrix{Float64})
