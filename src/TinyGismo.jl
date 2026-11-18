@@ -59,7 +59,7 @@ export numLevels, treeSize, levelOf, tensorLevel, getLevelAtPoint, levelAtCorner
 export elementBoxes
 export multiplicities, uSize, knotContainer
 export elementIndex, elementInSupportOf, active!, isActive
-export numActive, numActive!
+export numActive
 
 ## Geometry queries
 export numCoefs, coefs, coefsSize, coefAtCorner

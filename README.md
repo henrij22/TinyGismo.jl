@@ -1,7 +1,23 @@
-# TinyGismo
+<h1 align="center">TinyGismo.jl</h1>
 
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://henrij22.github.io/TinyGismo.jl/dev/)
-[![codecov](https://codecov.io/gh/henrij22/TinyGismo.jl/graph/badge.svg?token=zWCVMmLie1)](https://codecov.io/gh/henrij22/TinyGismo.jl)
+<p align="center">
+  <strong>A Julian interface to <a href="https://github.com/gismo/gismo">G+Smo</a> for splines, NURBS and Isogeometric Analysis</strong>
+</p>
+
+<p align="center">
+  <a href="https://henrij22.github.io/TinyGismo.jl/dev"><img src="https://img.shields.io/badge/docs-dev-blue.svg" alt="Docs dev"></a>
+  <a href="https://github.com/henrij22/TinyGismo.jl/actions/workflows/CI.yml"><img src="https://github.com/henrij22/TinyGismo.jl/actions/workflows/CI.yml/badge.svg" alt="Build status"></a>
+  <a href="https://codecov.io/gh/henrij22/TinyGismo.jl"><img src="https://codecov.io/gh/henrij22/TinyGismo.jl/graph/badge.svg?token=zWCVMmLie1" alt="codecov"></a>
+  <a href="https://github.com/JuliaTesting/Aqua.jl"><img src="https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg" alt="Aqua QA"></a>
+  <a href="https://github.com/fredrikekre/Runic.jl"><img src="https://img.shields.io/badge/code_style-%E1%9A%B1%E1%9A%A2%E1%9A%BE%E1%9B%81%E1%9A%B2-black" alt="Code style: Runic"></a>
+</p>
+
+<p align="center">
+  <a href="#installation--deployment">Installation</a> ·
+  <a href="https://henrij22.github.io/TinyGismo.jl/dev/">Documentation</a>
+</p>
+
+---
 
 TinyGismo.jl provides an alternative Julia interface to the G+Smo (Geometry + Simulation Modules) library for Splines, NURBS and Isogeometric Anylsis, focusing on:
 
