@@ -8,6 +8,8 @@ using EnumX
 # Binary Dependency
 using TinyGismo_jll
 
+import Base: reverse!
+
 @wrapmodule(() -> libjltinygismo)
 
 function __init__()
